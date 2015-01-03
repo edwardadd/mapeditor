@@ -9,7 +9,7 @@ public class TileLayer {
     private int       layerIndex;
         
     public TileLayer(int index, int width, int height) {
-        tiles = new ArrayList(width*height);
+        tiles = new ArrayList<Tile>(width*height);
         layerIndex = index;
         this.width = width;
         this.height = height;
