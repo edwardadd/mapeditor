@@ -1,6 +1,12 @@
 package uk.co.addhop.mapeditor;
 
 import com.apple.eawt.Application;
+import uk.co.addhop.mapeditor.map.MapModel;
+import uk.co.addhop.mapeditor.map.MapView;
+import uk.co.addhop.mapeditor.map.MapViewController;
+import uk.co.addhop.mapeditor.palette.PaletteModel;
+import uk.co.addhop.mapeditor.palette.PaletteView;
+import uk.co.addhop.mapeditor.palette.PaletteViewController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,7 +59,37 @@ public class MainApplication {
         updateRecentMenus();
 
         JFrame appWindow = new JFrame("Map Editor v1.0");
-        appWindow.setSize(600, 400);
+
+        // Set up main map panel
+        MapModel mapModel = new MapModel();
+        MapViewController mapViewController = new MapViewController();
+
+        MapView mapView = new MapView();
+        mapView.initialize(appWindow, mapViewController);
+
+        mapViewController.setViewModel(mapView, mapModel);
+
+        mapModel.addObserver(mapView);
+
+        // Set up palette panel
+        PaletteModel paletteModel = new PaletteModel();
+        PaletteViewController paletteViewController = new PaletteViewController();
+        PaletteView paletteView = new PaletteView();
+        paletteView.setController(paletteViewController);
+
+        paletteModel.addObserver(paletteView);
+
+        // Set up split
+        appWindow.getContentPane().setLayout(new BorderLayout());
+
+        JScrollPane westScroll = new JScrollPane(paletteView);
+        JScrollPane centerScroll = new JScrollPane(mapView);
+
+        appWindow.getContentPane().add(westScroll, BorderLayout.WEST);
+        appWindow.getContentPane().add(centerScroll, BorderLayout.CENTER);
+//        appWindow.pack();
+
+        appWindow.setSize(1024, 800);
         appWindow.setVisible(true);
     }
 

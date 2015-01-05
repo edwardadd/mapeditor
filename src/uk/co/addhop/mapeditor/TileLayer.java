@@ -1,9 +1,10 @@
 package uk.co.addhop.mapeditor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TileLayer {
-    private ArrayList<Tile> tiles;
+    private List<Tile> tiles;
     private int       width;
     private int       height;
     private int       layerIndex;
