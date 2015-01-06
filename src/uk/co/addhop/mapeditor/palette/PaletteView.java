@@ -19,7 +19,7 @@ public class PaletteView extends JPanel implements Observer {
     }
 
     @Override
-    public void paintComponents(Graphics g) {
+    protected void paintComponent(Graphics g) {
         super.paintComponents(g);
 
         g.setColor(Color.BLUE);

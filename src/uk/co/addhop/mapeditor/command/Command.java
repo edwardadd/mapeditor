@@ -3,12 +3,12 @@
  * and open the template in the editor.
  */
 
-package uk.co.addhop.mapeditor;
+package uk.co.addhop.mapeditor.command;
 
 /**
  * @author mr edward addley
  */
-abstract class Command {
+public abstract class Command {
     public String name;
 
     public abstract void undo();

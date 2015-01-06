@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package uk.co.addhop.mapeditor;
+package uk.co.addhop.mapeditor.command;
 
 ;
 

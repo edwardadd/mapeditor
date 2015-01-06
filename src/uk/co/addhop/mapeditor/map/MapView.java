@@ -5,8 +5,10 @@ import uk.co.addhop.mapeditor.TileTypeDatabase;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Write a description of class TileImageGUI here.
@@ -26,6 +28,8 @@ public class MapView extends JPanel implements Observer {
     private java.util.List<Tile> tileSetImages;
 
     private TileTypeDatabase database;
+    private int tileWidth;
+    private int tileHeight;
 
     public MapView() {
         setBackground(Color.white);
@@ -65,9 +69,11 @@ public class MapView extends JPanel implements Observer {
         int i = 0;
         while (iter.hasNext()) {
             Tile tileImg = (Tile) iter.next();
-            
-            /*g.drawImage( tileImg.getImage(), 0, i * 50, null);
-            if(tileImg == controller.getSelectedTile())
+
+            Image image = database.getTileImage(tileImg.getTileSetIndex());
+
+            g.drawImage(image, 0, i * tileWidth, null);
+            /*if(tileImg == controller.getSelectedTile())
             {
                 g.draw3DRect(0, i*50, 100, 50, true);
             }*/
@@ -83,7 +89,10 @@ public class MapView extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (arg != null) {
-            tileSetImages = (List<Tile>) arg;
+            MapModel.NotifyData notifyData = (MapModel.NotifyData) arg;
+            tileSetImages = notifyData.tileList;
+            tileWidth = notifyData.width;
+            tileHeight = notifyData.height;
         }
     }
 }

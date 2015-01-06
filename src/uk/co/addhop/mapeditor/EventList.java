@@ -1,13 +1,15 @@
 package uk.co.addhop.mapeditor;
 
+import uk.co.addhop.mapeditor.command.Command;
+
 import java.util.Stack;
 
 /**
  * @stereotype control
  */
 public class EventList {
-    private Stack undoList;
-    private Stack redoList;
+    private Stack<Command> undoList;
+    private Stack<Command> redoList;
 
     public void undo() {
         // message #1.1.1 to undoList:java.util.Stack

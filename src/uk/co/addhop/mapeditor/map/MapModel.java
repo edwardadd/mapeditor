@@ -30,6 +30,9 @@ public class MapModel extends Observable {
         mapWidth = 10;
         mapHeight = 10;
 
+        tileWidth = 8;
+        tileHeight = 8;
+
         mapTiles = new ArrayList<Tile>(mapWidth * mapHeight);
     }
 
@@ -44,7 +47,9 @@ public class MapModel extends Observable {
     public void initialize(final MapView view) {
         this.view = view;
 
-        notifyObservers(mapTiles);
+        // Load previous map or start empty
+
+        notifyChanges();
     }
 
     public void loadTileSet(String filename) {
@@ -53,5 +58,40 @@ public class MapModel extends Observable {
 
     public void saveTileSet(String filename) {
 
+    }
+
+    public void createMap(String mapName, int width, int height) {
+        this.mapName = mapName;
+
+        mapTiles.clear();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                final Tile tile = new Tile();
+                tile.setXPosition(x);
+                tile.setYPosition(y);
+
+                mapTiles.add(tile);
+            }
+        }
+
+        notifyChanges();
+    }
+
+    private void notifyChanges() {
+        notifyData.width = tileWidth;
+        notifyData.height = tileHeight;
+        notifyData.tileList = mapTiles;
+
+        notifyObservers(notifyData);
+    }
+
+    public static NotifyData notifyData = new NotifyData();
+
+    public static class NotifyData {
+        public int width;
+        public int height;
+
+        public List<Tile> tileList;
     }
 }

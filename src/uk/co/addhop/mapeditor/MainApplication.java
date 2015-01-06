@@ -7,6 +7,9 @@ import uk.co.addhop.mapeditor.map.MapViewController;
 import uk.co.addhop.mapeditor.palette.PaletteModel;
 import uk.co.addhop.mapeditor.palette.PaletteView;
 import uk.co.addhop.mapeditor.palette.PaletteViewController;
+import uk.co.addhop.mapeditor.toolbar.ToolbarController;
+import uk.co.addhop.mapeditor.toolbar.ToolbarModel;
+import uk.co.addhop.mapeditor.toolbar.ToolbarView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -79,12 +82,21 @@ public class MainApplication {
 
         paletteModel.addObserver(paletteView);
 
+        // Set up toolbar
+        ToolbarModel toolbarModel = new ToolbarModel();
+        ToolbarView toolbarView = new ToolbarView();
+        ToolbarController toolbarController = new ToolbarController(toolbarModel, mapModel);
+
+        toolbarModel.addObserver(toolbarView);
+        toolbarView.makeToolbar(toolbarController);
+
         // Set up split
         appWindow.getContentPane().setLayout(new BorderLayout());
 
         JScrollPane westScroll = new JScrollPane(paletteView);
         JScrollPane centerScroll = new JScrollPane(mapView);
 
+        appWindow.getContentPane().add(toolbarView, BorderLayout.PAGE_START);
         appWindow.getContentPane().add(westScroll, BorderLayout.WEST);
         appWindow.getContentPane().add(centerScroll, BorderLayout.CENTER);
 //        appWindow.pack();
