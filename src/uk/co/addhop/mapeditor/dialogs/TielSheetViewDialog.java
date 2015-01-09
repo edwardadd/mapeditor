@@ -1,7 +1,8 @@
 package uk.co.addhop.mapeditor.dialogs;
 
 import uk.co.addhop.mapeditor.TileSheet;
-import uk.co.addhop.mapeditor.TileTypeDatabase;
+import uk.co.addhop.mapeditor.map.MapModel;
+import uk.co.addhop.mapeditor.palette.TileTypeDatabase;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,14 +19,19 @@ public class TielSheetViewDialog extends JDialog implements ActionListener {
 
     private TileTypeDatabase database;
 
-    private int gridWidth;
-    private int gridHeight;
-
     private TileSheet tileSheet;
     private TileSheetView tileSheetView;
 
-    public TielSheetViewDialog(Frame owner, String title, boolean modal, String tileSheetFilename) {
+    private int tileWidth;
+    private int tileHeight;
+
+    public TielSheetViewDialog(Frame owner, String title, boolean modal, String tileSheetFilename, MapModel mapModel) {
         super(owner, title, modal);
+
+        tileWidth = mapModel.getTileWidth();
+        tileHeight = mapModel.getTileHeight();
+
+        database = mapModel.getDatabase();
 
         makeView();
 
@@ -42,7 +48,7 @@ public class TielSheetViewDialog extends JDialog implements ActionListener {
         tileSheet.setImage(image.getImage());
 
         tileSheetView.setImage(image);
-        tileSheetView.repaint();
+//        tileSheetView.repaint();
 
         if (image.getImageLoadStatus() != MediaTracker.COMPLETE) {
             System.err.println("File not found: " + tileSheetFilename);
@@ -56,7 +62,6 @@ public class TielSheetViewDialog extends JDialog implements ActionListener {
         tileSheetView = new TileSheetView();
 
         FlowLayout layout = new FlowLayout();
-//        layout.addLayoutComponent("tile", tileSheetView);
         add(tileSheetView);
 
         JButton okButton = new JButton("OK");
@@ -67,8 +72,6 @@ public class TielSheetViewDialog extends JDialog implements ActionListener {
         okButton.addActionListener(this);
         cancelButton.addActionListener(this);
 
-//        layout.addLayoutComponent("ok", okButton);
-//        layout.addLayoutComponent("cancel", cancelButton);
         add(okButton);
         add(cancelButton);
 
@@ -78,6 +81,29 @@ public class TielSheetViewDialog extends JDialog implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("OK")) {
+            java.util.List<TileSheet.Cell> sheet = tileSheet.getSheet();
+            sheet.clear();
+
+            final int imageWidth = tileSheet.getImage().getWidth(null);
+            final int imageHeight = tileSheet.getImage().getHeight(null);
+
+//            final int remainderWidth = imageWidth % tileWidth;
+//            final int remainderHeight = imageHeight % imageHeight;
+
+            int y = 0;
+            while (y < imageHeight) {
+
+                int x = 0;
+                while (x < imageWidth) {
+
+                    // Todo sort out non uniformly set width and height images
+                    tileSheet.addCell(x, y, tileWidth, tileHeight);
+                    x += tileWidth;
+                }
+                y += tileHeight;
+            }
+
+            database.addTileSheet("tile", tileSheet);
         }
 
         dispose();

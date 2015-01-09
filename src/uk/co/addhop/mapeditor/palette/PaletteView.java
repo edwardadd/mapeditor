@@ -13,6 +13,10 @@ import java.util.Observer;
 public class PaletteView extends JPanel implements Observer {
 
     private PaletteViewController controller;
+    private TileTypeDatabase database;
+    private java.util.List<TileTypeDatabase.DisplayCell> displayCellList;
+
+    private int scrollX = 0;
 
     public PaletteView() {
         super();
@@ -23,12 +27,27 @@ public class PaletteView extends JPanel implements Observer {
         super.paintComponents(g);
 
         g.setColor(Color.BLUE);
-        g.fillRect(getX(), getY(), getWidth(), getHeight());
+        g.fillRect(0, 0, getWidth(), getHeight());
+
+        int y = 0;
+        if (displayCellList != null) {
+            for (TileTypeDatabase.DisplayCell cell : displayCellList) {
+                g.drawImage(cell.getImage(),
+                        0, y, (int) cell.getFrame().getWidth(), y + (int) cell.getFrame().getHeight(),
+                        (int) cell.getFrame().getX(), (int) cell.getFrame().getY(), (int) (cell.getFrame().getX() + cell.getFrame().getWidth()), (int) (cell.getFrame().getY() + cell.getFrame().getHeight()), null);
+                y += cell.getFrame().getHeight();
+            }
+        }
     }
 
     @Override
     public void update(Observable o, Object arg) {
+        displayCellList = database.getListOfDisplayCells();
+        repaint();
+    }
 
+    public void setDatabase(TileTypeDatabase database) {
+        this.database = database;
     }
 
     public void setController(PaletteViewController controller) {

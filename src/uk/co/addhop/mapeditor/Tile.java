@@ -5,6 +5,9 @@ package uk.co.addhop.mapeditor;
  */
 public class Tile {
 
+    /* Tile sheet name */
+    private String tileSheet;
+
     /* The index of the Tile from a tile set */
     private int index;
 
@@ -13,15 +16,23 @@ public class Tile {
     private int yPosition;
 
     /* the layer this tile is associated with */
-    private TileLayer mTileLayer;
+//    private TileLayer mTileLayer;
 
     public Tile() {
     }
 
-    public Tile(int x, int y, int index) {
+    public Tile(final int x, final int y, final int index) {
         xPosition = x;
         yPosition = y;
         this.index = index;
+    }
+
+    public String getTileSheet() {
+        return tileSheet;
+    }
+
+    public void setTileSheet(final String tileSheet) {
+        this.tileSheet = tileSheet;
     }
 
     public int getTileSetIndex() {
@@ -40,11 +51,11 @@ public class Tile {
         return yPosition;
     }
 
-    public void setXPosition(int x) {
+    public void setXPosition(final int x) {
         xPosition = x;
     }
 
-    public void setYPosition(int y) {
+    public void setYPosition(final int y) {
         yPosition = y;
     }
 
@@ -55,7 +66,7 @@ public class Tile {
         return ret;
     }
 
-    public Tile copy(Tile copyTo) {
+    public Tile copy(final Tile copyTo) {
         copyTo.setXPosition(getXPosition());
         copyTo.setYPosition(getYPosition());
         copyTo.setTileSetIndex(getTileSetIndex());

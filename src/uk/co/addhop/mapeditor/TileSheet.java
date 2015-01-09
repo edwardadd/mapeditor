@@ -1,6 +1,7 @@
 package uk.co.addhop.mapeditor;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,12 +9,16 @@ import java.util.List;
  */
 public class TileSheet {
     private String filename;
-    private List<Cell> sheet;
+    private List<Cell> sheet = new ArrayList<Cell>();
     private Image image;
 
     public class Cell {
         private Rectangle frame;
         private Image cachedImage; // Take from the main image
+
+        public Cell(final Rectangle rectangle) {
+            frame = rectangle;
+        }
 
         public Rectangle getFrame() {
             return frame;
@@ -54,6 +59,10 @@ public class TileSheet {
 
     public void setImage(Image image) {
         this.image = image;
+    }
+
+    public void addCell(final int x, final int y, final int width, final int height) {
+        sheet.add(new Cell(new Rectangle(x, y, width, height)));
     }
 
     @Override

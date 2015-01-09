@@ -1,7 +1,7 @@
 package uk.co.addhop.mapeditor.map;
 
 import uk.co.addhop.mapeditor.Tile;
-import uk.co.addhop.mapeditor.TileTypeDatabase;
+import uk.co.addhop.mapeditor.palette.TileTypeDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +30,8 @@ public class MapModel extends Observable {
         mapWidth = 10;
         mapHeight = 10;
 
-        tileWidth = 8;
-        tileHeight = 8;
+        tileWidth = 50;
+        tileHeight = 50;
 
         mapTiles = new ArrayList<Tile>(mapWidth * mapHeight);
     }
@@ -78,10 +78,36 @@ public class MapModel extends Observable {
         notifyChanges();
     }
 
+    public int getMapWidth() {
+        return mapWidth;
+    }
+
+    public int getMapHeight() {
+        return mapHeight;
+    }
+
+    public int getTileWidth() {
+        return tileWidth;
+    }
+
+    public int getTileHeight() {
+        return tileHeight;
+    }
+
+    public TileTypeDatabase getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(TileTypeDatabase database) {
+        this.database = database;
+    }
+
     private void notifyChanges() {
         notifyData.width = tileWidth;
         notifyData.height = tileHeight;
         notifyData.tileList = mapTiles;
+
+        setChanged();
 
         notifyObservers(notifyData);
     }

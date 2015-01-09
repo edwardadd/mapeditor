@@ -1,7 +1,7 @@
 package uk.co.addhop.mapeditor.map;
 
 import uk.co.addhop.mapeditor.Tile;
-import uk.co.addhop.mapeditor.TileTypeDatabase;
+import uk.co.addhop.mapeditor.palette.TileTypeDatabase;
 
 import javax.swing.*;
 import java.awt.*;

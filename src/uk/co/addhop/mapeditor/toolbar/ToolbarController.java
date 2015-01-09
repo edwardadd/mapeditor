@@ -54,7 +54,7 @@ public class ToolbarController implements ActionListener {
                 final String filePath = chooser.getSelectedFile().getAbsolutePath();
 
                 // Display modal dialog for cutting up the
-                TielSheetViewDialog dialog = new TielSheetViewDialog(null, "Tile Sheet View Dialog", true, filePath);
+                TielSheetViewDialog dialog = new TielSheetViewDialog(null, "Tile Sheet View Dialog", true, filePath, mapModel);
                 dialog.setVisible(true);
             }
         }

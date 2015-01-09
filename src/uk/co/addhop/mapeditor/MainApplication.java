@@ -4,9 +4,9 @@ import com.apple.eawt.Application;
 import uk.co.addhop.mapeditor.map.MapModel;
 import uk.co.addhop.mapeditor.map.MapView;
 import uk.co.addhop.mapeditor.map.MapViewController;
-import uk.co.addhop.mapeditor.palette.PaletteModel;
 import uk.co.addhop.mapeditor.palette.PaletteView;
 import uk.co.addhop.mapeditor.palette.PaletteViewController;
+import uk.co.addhop.mapeditor.palette.TileTypeDatabase;
 import uk.co.addhop.mapeditor.toolbar.ToolbarController;
 import uk.co.addhop.mapeditor.toolbar.ToolbarModel;
 import uk.co.addhop.mapeditor.toolbar.ToolbarView;
@@ -63,6 +63,9 @@ public class MainApplication {
 
         JFrame appWindow = new JFrame("Map Editor v1.0");
 
+        TileTypeDatabase tileTypeDatabase = new TileTypeDatabase();
+        tileTypeDatabase.loadDatabase();
+
         // Set up main map panel
         MapModel mapModel = new MapModel();
         MapViewController mapViewController = new MapViewController();
@@ -72,15 +75,16 @@ public class MainApplication {
 
         mapViewController.setViewModel(mapView, mapModel);
 
+        mapModel.setDatabase(tileTypeDatabase);
         mapModel.addObserver(mapView);
 
         // Set up palette panel
-        PaletteModel paletteModel = new PaletteModel();
         PaletteViewController paletteViewController = new PaletteViewController();
         PaletteView paletteView = new PaletteView();
+        paletteView.setDatabase(tileTypeDatabase);
         paletteView.setController(paletteViewController);
 
-        paletteModel.addObserver(paletteView);
+        tileTypeDatabase.addObserver(paletteView);
 
         // Set up toolbar
         ToolbarModel toolbarModel = new ToolbarModel();
