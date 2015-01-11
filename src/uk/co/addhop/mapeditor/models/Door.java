@@ -1,4 +1,4 @@
-package uk.co.addhop.mapeditor;
+package uk.co.addhop.mapeditor.models;
 
 /**
  * Write a description of class Door here.

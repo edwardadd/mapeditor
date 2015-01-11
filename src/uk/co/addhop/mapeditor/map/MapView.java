@@ -1,12 +1,13 @@
 package uk.co.addhop.mapeditor.map;
 
-import uk.co.addhop.mapeditor.Tile;
-import uk.co.addhop.mapeditor.palette.TileTypeDatabase;
+import uk.co.addhop.mapeditor.models.Map;
+import uk.co.addhop.mapeditor.models.Tile;
+import uk.co.addhop.mapeditor.models.TileSheet;
+import uk.co.addhop.mapeditor.models.TileTypeDatabase;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -25,7 +26,7 @@ public class MapView extends JPanel implements Observer {
 
     private MapViewController controller;
 
-    private java.util.List<Tile> tileSetImages;
+    private java.util.List<Tile> tileList;
 
     private TileTypeDatabase database;
     private int tileWidth;
@@ -34,11 +35,12 @@ public class MapView extends JPanel implements Observer {
     public MapView() {
         setBackground(Color.white);
 
-        tileSetImages = new ArrayList<Tile>();
+        tileList = new ArrayList<Tile>();
     }
 
-    public void initialize(JFrame win, MapViewController controller) {
+    public void initialize(JFrame win, MapViewController controller, TileTypeDatabase database) {
         this.controller = controller;
+        this.database = database;
 
         this.addMouseListener(controller);
 
@@ -63,25 +65,23 @@ public class MapView extends JPanel implements Observer {
         g.setColor(Color.RED);
         g.fillRect(getX(), getY(), getWidth(), getHeight());
 
-        Iterator iter;
-        iter = tileSetImages.iterator();
+        for (Tile tile : tileList) {
+            int x = tileWidth * tile.getXPosition();
+            int y = tileHeight * tile.getYPosition();
 
-        int i = 0;
-        while (iter.hasNext()) {
-            Tile tileImg = (Tile) iter.next();
+            final TileSheet tileSheet = database.getTileSheet(tile.getTileSheet());
+            final TileSheet.Cell cell = tileSheet.getSheet().get(tile.getTileSetIndex());
 
-            Image image = database.getTileImage(tileImg.getTileSetIndex());
+            int dx = (int) cell.getFrame().getX();
+            int dy = (int) cell.getFrame().getY();
+            int dx2 = (int) (cell.getFrame().getX() + cell.getFrame().getWidth());
+            int dy2 = (int) (cell.getFrame().getY() + cell.getFrame().getHeight());
 
-            g.drawImage(image, 0, i * tileWidth, null);
-            /*if(tileImg == controller.getSelectedTile())
-            {
-                g.draw3DRect(0, i*50, 100, 50, true);
-            }*/
-            i++;
+            g.drawImage(tileSheet.getImage(), x, y, x + tileWidth, y + tileHeight, dx, dy, dx2, dy2, null);
         }
     }
 
-
+    @Override
     public Dimension getPreferredSize() {
         return new Dimension(100, 100);
     }
@@ -89,10 +89,15 @@ public class MapView extends JPanel implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (arg != null) {
-            MapModel.NotifyData notifyData = (MapModel.NotifyData) arg;
-            tileSetImages = notifyData.tileList;
+            Map.NotifyData notifyData = (Map.NotifyData) arg;
+            tileList = notifyData.tileList;
             tileWidth = notifyData.width;
             tileHeight = notifyData.height;
+
+//            final Tile lastTile = tileList.get(tileList.size()-1);
+//            setSize(tileWidth * lastTile.getXPosition(), tileHeight * lastTile.getYPosition());
+
+            repaint();
         }
     }
 }

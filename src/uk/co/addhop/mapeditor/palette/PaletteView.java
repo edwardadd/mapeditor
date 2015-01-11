@@ -1,5 +1,7 @@
 package uk.co.addhop.mapeditor.palette;
 
+import uk.co.addhop.mapeditor.models.TileTypeDatabase;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Observable;
@@ -29,6 +31,8 @@ public class PaletteView extends JPanel implements Observer {
         g.setColor(Color.BLUE);
         g.fillRect(0, 0, getWidth(), getHeight());
 
+        // TODO Optimise, only draw if there is space in the component
+
         int y = 0;
         if (displayCellList != null) {
             for (TileTypeDatabase.DisplayCell cell : displayCellList) {
@@ -52,6 +56,8 @@ public class PaletteView extends JPanel implements Observer {
 
     public void setController(PaletteViewController controller) {
         this.controller = controller;
+
+        addMouseListener(controller);
     }
 
     public PaletteViewController getController() {

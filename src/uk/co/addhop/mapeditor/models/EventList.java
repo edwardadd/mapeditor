@@ -1,4 +1,4 @@
-package uk.co.addhop.mapeditor;
+package uk.co.addhop.mapeditor.models;
 
 import uk.co.addhop.mapeditor.command.Command;
 

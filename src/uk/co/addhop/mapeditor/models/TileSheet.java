@@ -1,4 +1,4 @@
-package uk.co.addhop.mapeditor;
+package uk.co.addhop.mapeditor.models;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -47,10 +47,6 @@ public class TileSheet {
 
     public List<Cell> getSheet() {
         return sheet;
-    }
-
-    public void setSheet(List<Cell> sheet) {
-        this.sheet = sheet;
     }
 
     public Image getImage() {

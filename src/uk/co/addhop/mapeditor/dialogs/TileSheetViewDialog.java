@@ -1,8 +1,8 @@
 package uk.co.addhop.mapeditor.dialogs;
 
-import uk.co.addhop.mapeditor.TileSheet;
-import uk.co.addhop.mapeditor.map.MapModel;
-import uk.co.addhop.mapeditor.palette.TileTypeDatabase;
+import uk.co.addhop.mapeditor.models.Map;
+import uk.co.addhop.mapeditor.models.TileSheet;
+import uk.co.addhop.mapeditor.models.TileTypeDatabase;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
  * <p/>
  * Created by edwardaddley on 06/01/15.
  */
-public class TielSheetViewDialog extends JDialog implements ActionListener {
+public class TileSheetViewDialog extends JDialog implements ActionListener {
 
     private TileTypeDatabase database;
 
@@ -25,7 +25,7 @@ public class TielSheetViewDialog extends JDialog implements ActionListener {
     private int tileWidth;
     private int tileHeight;
 
-    public TielSheetViewDialog(Frame owner, String title, boolean modal, String tileSheetFilename, MapModel mapModel) {
+    public TileSheetViewDialog(Frame owner, String title, boolean modal, String tileSheetFilename, Map mapModel) {
         super(owner, title, modal);
 
         tileWidth = mapModel.getTileWidth();
@@ -59,23 +59,27 @@ public class TielSheetViewDialog extends JDialog implements ActionListener {
         setSize(640, 480);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        tileSheetView = new TileSheetView();
+        setLayout(new BorderLayout());
 
-        FlowLayout layout = new FlowLayout();
-        add(tileSheetView);
+        tileSheetView = new TileSheetView();
+        add(tileSheetView, BorderLayout.CENTER);
 
         JButton okButton = new JButton("OK");
         okButton.setActionCommand("OK");
+
         JButton cancelButton = new JButton("Cancel");
         cancelButton.setActionCommand("CANCEL");
 
         okButton.addActionListener(this);
         cancelButton.addActionListener(this);
 
-        add(okButton);
-        add(cancelButton);
+        JPanel panel = new JPanel(new FlowLayout());
 
-        setLayout(layout);
+        panel.add(okButton);
+        panel.add(cancelButton);
+
+        add(panel, BorderLayout.PAGE_END);
+
     }
 
     @Override

@@ -1,5 +1,9 @@
 package uk.co.addhop.mapeditor.map;
 
+import uk.co.addhop.mapeditor.models.Brush;
+import uk.co.addhop.mapeditor.models.Map;
+import uk.co.addhop.mapeditor.models.Tile;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -15,17 +19,25 @@ import java.awt.event.MouseListener;
 public class MapViewController implements ActionListener, MouseListener {
 
     private MapView view;
-    private MapModel model;
+    private Map model;
+    private Brush brush;
 
-    private int selectedTile;
+    private int selectedTileX;
+    private int selectedTileY;
 
     public void mouseClicked(MouseEvent e) {
 
-        double y = e.getY();
-        y = Math.floor(y / 50);
+        int x = Math.floorDiv(e.getX(), model.getTileWidth());
+        int y = Math.floorDiv(e.getY(), model.getTileHeight());
 
-        selectedTile = (int) y;
-        view.invalidate();
+        selectedTileX = x;
+        selectedTileY = y;
+
+        Tile tile = model.getTile(x, y);
+        brush.setSelectedTile(tile);
+
+        tile.setTileSheet(brush.getTileSheetName());
+        tile.setTileSetIndex(brush.getTileSheetCellIndex());
     }
 
     public void mouseDragged(MouseEvent e) {
@@ -69,12 +81,9 @@ public class MapViewController implements ActionListener, MouseListener {
     }
 
 
-    public void setViewModel(final MapView tileImageView, final MapModel mapModel) {
+    public void setViewModel(final MapView tileImageView, final Map mapModel, final Brush brush) {
         model = mapModel;
         view = tileImageView;
-    }
-
-    public int getSelectedTile() {
-        return selectedTile;
+        this.brush = brush;
     }
 }

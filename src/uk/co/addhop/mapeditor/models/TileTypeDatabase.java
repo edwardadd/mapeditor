@@ -1,9 +1,8 @@
-package uk.co.addhop.mapeditor.palette;
-
-import uk.co.addhop.mapeditor.TileSheet;
+package uk.co.addhop.mapeditor.models;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,25 +19,25 @@ public class TileTypeDatabase extends Observable {
 
     public TileTypeDatabase() {
         tileSheetList = new HashMap<String, TileSheet>();
+        createDefaultTileSheet();
     }
 
-    private void cacheTileSheets() {
-        // TODO
-    }
+    public void createDefaultTileSheet() {
+        final TileSheet tileSheet = new TileSheet();
+        tileSheet.setFilename("Default");
 
-    public Image getTileImage(final String name, final int index) {
-        final TileSheet sheet = tileSheetList.get(name);
-        final TileSheet.Cell cell = sheet.getSheet().get(index);
+        final BufferedImage image = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
+        final Graphics graphic = image.getGraphics();
+        graphic.setColor(Color.GREEN);
+        graphic.fillRect(0, 0, 50, 50);
+        graphic.setColor(Color.BLACK);
+        graphic.drawRect(1, 1, 47, 47);
+        tileSheet.setImage(image);
+        tileSheet.addCell(0, 0, 50, 50);
 
-        Image image = cell.getCachedImage();
-        if (image == null) {
-            image = sheet.getImage();
-        }
-        return image;
-    }
+        tileSheetList.put("Default", tileSheet);
 
-    public Image getTileImage(final int name) {
-        return tileSheetList.get(name).getImage();
+        setChanged();
     }
 
     public void loadDatabase() {
@@ -59,7 +58,7 @@ public class TileTypeDatabase extends Observable {
         if (imageURL != null) {
             return new ImageIcon(imageURL);
         } else { // file is not a inside the jar file
-            System.err.println("Couldn't find file: " + filename);
+            System.out.println("File not found in package : " + filename);
             return new ImageIcon(filename);
         }
     }

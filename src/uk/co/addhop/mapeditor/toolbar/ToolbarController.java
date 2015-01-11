@@ -1,8 +1,8 @@
 package uk.co.addhop.mapeditor.toolbar;
 
 import uk.co.addhop.mapeditor.dialogs.NewMapDialogViewController;
-import uk.co.addhop.mapeditor.dialogs.TielSheetViewDialog;
-import uk.co.addhop.mapeditor.map.MapModel;
+import uk.co.addhop.mapeditor.dialogs.TileSheetViewDialog;
+import uk.co.addhop.mapeditor.models.Map;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -16,9 +16,9 @@ import java.awt.event.ActionListener;
 public class ToolbarController implements ActionListener {
 
     private ToolbarModel toolbarModel;
-    private MapModel mapModel;
+    private Map mapModel;
 
-    public ToolbarController(final ToolbarModel toolbarModel, final MapModel mapModel) {
+    public ToolbarController(final ToolbarModel toolbarModel, final Map mapModel) {
         this.toolbarModel = toolbarModel;
         this.mapModel = mapModel;
     }
@@ -54,7 +54,7 @@ public class ToolbarController implements ActionListener {
                 final String filePath = chooser.getSelectedFile().getAbsolutePath();
 
                 // Display modal dialog for cutting up the
-                TielSheetViewDialog dialog = new TielSheetViewDialog(null, "Tile Sheet View Dialog", true, filePath, mapModel);
+                TileSheetViewDialog dialog = new TileSheetViewDialog(null, "Tile Sheet View Dialog", true, filePath, mapModel);
                 dialog.setVisible(true);
             }
         }

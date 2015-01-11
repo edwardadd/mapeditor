@@ -1,13 +1,10 @@
-package uk.co.addhop.mapeditor.map;
-
-import uk.co.addhop.mapeditor.Tile;
-import uk.co.addhop.mapeditor.palette.TileTypeDatabase;
+package uk.co.addhop.mapeditor.models;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-public class MapModel extends Observable {
+public class Map extends Observable {
     private String mapName;
 
     private List<Tile> mapTiles;
@@ -19,10 +16,7 @@ public class MapModel extends Observable {
 
     private TileTypeDatabase database;
 
-    private MapView view;
-
-
-    public MapModel() {
+    public Map() {
         super();
 
         mapName = "New Tile Set.tst";
@@ -36,7 +30,7 @@ public class MapModel extends Observable {
         mapTiles = new ArrayList<Tile>(mapWidth * mapHeight);
     }
 
-    public MapModel(final String filename) {
+    public Map(final String filename) {
         super();
 
         mapName = filename;
@@ -44,8 +38,7 @@ public class MapModel extends Observable {
         loadTileSet(filename);
     }
 
-    public void initialize(final MapView view) {
-        this.view = view;
+    public void initialize() {
 
         // Load previous map or start empty
 
@@ -62,14 +55,18 @@ public class MapModel extends Observable {
 
     public void createMap(String mapName, int width, int height) {
         this.mapName = mapName;
+        this.mapWidth = width;
+        this.mapHeight = height;
+
+        TileSheet defaultTileSheet = database.getTileSheet("Default");
 
         mapTiles.clear();
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                final Tile tile = new Tile();
-                tile.setXPosition(x);
-                tile.setYPosition(y);
+                final Tile tile = new Tile(x, y);
+                tile.setTileSetIndex(0);
+                tile.setTileSheet("Default");
 
                 mapTiles.add(tile);
             }
@@ -113,6 +110,19 @@ public class MapModel extends Observable {
     }
 
     public static NotifyData notifyData = new NotifyData();
+
+    public Tile getTile(int x, int y) {
+
+        // TODO Optimise, the grid should be in order of (x + y * width) incrementing x per y
+
+        for (Tile tile : mapTiles) {
+            if (tile.getXPosition() == x && tile.getYPosition() == y) {
+                return tile;
+            }
+        }
+
+        return null;
+    }
 
     public static class NotifyData {
         public int width;

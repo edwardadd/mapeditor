@@ -1,6 +1,6 @@
 package uk.co.addhop.mapeditor.dialogs;
 
-import uk.co.addhop.mapeditor.map.MapModel;
+import uk.co.addhop.mapeditor.models.Map;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -16,9 +16,9 @@ public class NewMapDialogViewController extends javax.swing.JDialog implements A
     private javax.swing.JTextField filesetField;
     private javax.swing.JButton filesetButton;
 
-    private MapModel parent;
+    private Map parent;
 
-    public NewMapDialogViewController(final JFrame owner, final MapModel _parent, final boolean modal) {
+    public NewMapDialogViewController(final JFrame owner, final Map _parent, final boolean modal) {
         super(owner, "New Map...", modal);
         parent = _parent;
 

@@ -1,4 +1,4 @@
-package uk.co.addhop.mapeditor;
+package uk.co.addhop.mapeditor.models;
 
 /**
  * An individual tile on the map, contains TileSet for drawing the right tile.
@@ -18,13 +18,16 @@ public class Tile {
     /* the layer this tile is associated with */
 //    private TileLayer mTileLayer;
 
-    public Tile() {
+    private Tile() {
+        xPosition = -1;
+        yPosition = -1;
+        index = -1;
+        tileSheet = null;
     }
 
-    public Tile(final int x, final int y, final int index) {
+    public Tile(final int x, final int y) {
         xPosition = x;
         yPosition = y;
-        this.index = index;
     }
 
     public String getTileSheet() {
@@ -51,24 +54,16 @@ public class Tile {
         return yPosition;
     }
 
-    public void setXPosition(final int x) {
-        xPosition = x;
-    }
-
-    public void setYPosition(final int y) {
-        yPosition = y;
-    }
-
     public Tile copy() {
-        Tile ret = new Tile(0, 0, index);
-        ret.setXPosition(getXPosition());
-        ret.setYPosition(getYPosition());
+        Tile ret = new Tile(0, 0);
+        ret.xPosition = xPosition;
+        ret.yPosition = yPosition;
         return ret;
     }
 
     public Tile copy(final Tile copyTo) {
-        copyTo.setXPosition(getXPosition());
-        copyTo.setYPosition(getYPosition());
+        copyTo.xPosition = xPosition;
+        copyTo.yPosition = yPosition;
         copyTo.setTileSetIndex(getTileSetIndex());
         return copyTo;
     }
