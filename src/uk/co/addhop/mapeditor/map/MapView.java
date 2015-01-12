@@ -79,16 +79,16 @@ public class MapView extends JPanel implements View<MapViewController> {
     private MouseListener mouseListener = new MouseListener() {
         @Override
         public void mouseClicked(MouseEvent e) {
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
             final int x = Math.floorDiv(e.getX(), tileWidth);
             final int y = Math.floorDiv(e.getY(), tileHeight);
 
             controller.selectedTile(x, y);
 
             repaint();
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
 
         }
 

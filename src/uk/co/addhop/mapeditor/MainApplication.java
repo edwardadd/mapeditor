@@ -6,7 +6,7 @@ import uk.co.addhop.mapeditor.map.MapViewController;
 import uk.co.addhop.mapeditor.models.Brush;
 import uk.co.addhop.mapeditor.models.Map;
 import uk.co.addhop.mapeditor.models.TileTypeDatabase;
-import uk.co.addhop.mapeditor.palette.PaletteView;
+import uk.co.addhop.mapeditor.palette.NewPaletteView;
 import uk.co.addhop.mapeditor.palette.PaletteViewController;
 import uk.co.addhop.mapeditor.toolbar.ToolbarController;
 import uk.co.addhop.mapeditor.toolbar.ToolbarModel;
@@ -78,8 +78,8 @@ public class MainApplication {
 
             // Set up palette panel
             final PaletteViewController paletteViewController = new PaletteViewController();
-            final PaletteView paletteView = new PaletteView();
-
+//            final PaletteView paletteView = new PaletteView();
+            final NewPaletteView paletteView = new NewPaletteView();
             paletteViewController.setModel(brush);
             paletteView.setDatabase(tileTypeDatabase);
             paletteView.setController(paletteViewController);

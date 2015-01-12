@@ -3,10 +3,10 @@ package uk.co.addhop.mapeditor.models;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Vector;
 
 /**
  * TileTypeDatabase
@@ -79,8 +79,8 @@ public class TileTypeDatabase extends Observable {
      *
      * @return
      */
-    public java.util.List<DisplayCell> getListOfDisplayCells() {
-        final ArrayList<DisplayCell> displayCells = new ArrayList<DisplayCell>();
+    public java.util.Vector<DisplayCell> getListOfDisplayCells() {
+        final Vector<DisplayCell> displayCells = new Vector<DisplayCell>();
         for (TileSheet sheet : tileSheetList.values()) {
 
             final java.util.List<TileSheet.Cell> sheet1 = sheet.getSheet();
