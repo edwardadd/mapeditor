@@ -58,8 +58,6 @@ public class Map extends Observable {
         this.mapWidth = width;
         this.mapHeight = height;
 
-        TileSheet defaultTileSheet = database.getTileSheet("Default");
-
         mapTiles.clear();
 
         for (int y = 0; y < height; y++) {
@@ -112,13 +110,10 @@ public class Map extends Observable {
     public static NotifyData notifyData = new NotifyData();
 
     public Tile getTile(int x, int y) {
+        final int index = x + y * mapWidth;
 
-        // TODO Optimise, the grid should be in order of (x + y * width) incrementing x per y
-
-        for (Tile tile : mapTiles) {
-            if (tile.getXPosition() == x && tile.getYPosition() == y) {
-                return tile;
-            }
+        if (index < mapTiles.size()) {
+            return mapTiles.get(index);
         }
 
         return null;

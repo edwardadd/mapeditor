@@ -24,6 +24,8 @@ public class ToolbarView extends JToolBar implements Observer {
 
     public void makeToolbar(final ToolbarController controller) {
 
+//        this.setOpaque(false);
+
         newButton = makeButton("New...", controller, "newMap");
         loadButton = makeButton("Load...", controller, "loadMap");
         saveButton = makeButton("Save...", controller, "saveMap");

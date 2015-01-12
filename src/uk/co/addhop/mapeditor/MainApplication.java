@@ -56,37 +56,40 @@ public class MainApplication {
 
             updateRecentMenus();
 
-            JFrame appWindow = new JFrame("Map Editor v0.1");
+            final JFrame appWindow = new JFrame("Map Editor v0.1");
 
-            TileTypeDatabase tileTypeDatabase = new TileTypeDatabase();
+            final TileTypeDatabase tileTypeDatabase = new TileTypeDatabase();
             tileTypeDatabase.loadDatabase();
 
-            Brush brush = new Brush();
+            final Brush brush = new Brush();
 
             // Set up main map panel
-            Map mapModel = new Map();
-            MapViewController mapViewController = new MapViewController();
+            final Map mapModel = new Map();
+            final MapViewController mapViewController = new MapViewController();
+            mapViewController.setBrush(brush);
+            mapViewController.setModel(mapModel);
 
-            MapView mapView = new MapView();
-            mapView.initialize(appWindow, mapViewController, tileTypeDatabase);
-
-            mapViewController.setViewModel(mapView, mapModel, brush);
+            final MapView mapView = new MapView();
+            mapView.setDatabase(tileTypeDatabase);
+            mapView.setController(mapViewController);
 
             mapModel.setDatabase(tileTypeDatabase);
             mapModel.addObserver(mapView);
 
             // Set up palette panel
-            PaletteViewController paletteViewController = new PaletteViewController(brush);
-            PaletteView paletteView = new PaletteView();
+            final PaletteViewController paletteViewController = new PaletteViewController();
+            final PaletteView paletteView = new PaletteView();
+
+            paletteViewController.setModel(brush);
             paletteView.setDatabase(tileTypeDatabase);
             paletteView.setController(paletteViewController);
 
             tileTypeDatabase.addObserver(paletteView);
 
             // Set up toolbar
-            ToolbarModel toolbarModel = new ToolbarModel();
-            ToolbarView toolbarView = new ToolbarView();
-            ToolbarController toolbarController = new ToolbarController(toolbarModel, mapModel);
+            final ToolbarModel toolbarModel = new ToolbarModel();
+            final ToolbarView toolbarView = new ToolbarView();
+            final ToolbarController toolbarController = new ToolbarController(toolbarModel, mapModel);
 
             toolbarModel.addObserver(toolbarView);
             toolbarView.makeToolbar(toolbarController);
@@ -94,12 +97,13 @@ public class MainApplication {
             // Set up split
             appWindow.getContentPane().setLayout(new BorderLayout());
 
-            JScrollPane westScroll = new JScrollPane(paletteView);
-            JScrollPane centerScroll = new JScrollPane(mapView);
+            final JScrollPane westScroll = new JScrollPane(paletteView, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            final JScrollPane centerScroll = new JScrollPane(mapView, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
             appWindow.getContentPane().add(toolbarView, BorderLayout.PAGE_START);
             appWindow.getContentPane().add(westScroll, BorderLayout.WEST);
             appWindow.getContentPane().add(centerScroll, BorderLayout.CENTER);
+            appWindow.getContentPane().add(new JPanel(), BorderLayout.SOUTH);
 //        appWindow.pack();
 
             appWindow.setSize(1024, 800);

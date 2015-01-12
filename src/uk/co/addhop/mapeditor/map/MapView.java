@@ -1,5 +1,7 @@
 package uk.co.addhop.mapeditor.map;
 
+import uk.co.addhop.mapeditor.interfaces.Controller;
+import uk.co.addhop.mapeditor.interfaces.View;
 import uk.co.addhop.mapeditor.models.Map;
 import uk.co.addhop.mapeditor.models.Tile;
 import uk.co.addhop.mapeditor.models.TileSheet;
@@ -7,9 +9,10 @@ import uk.co.addhop.mapeditor.models.TileTypeDatabase;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Write a description of class TileImageGUI here.
@@ -17,13 +20,7 @@ import java.util.Observer;
  * @author (your name)
  * @version (a version number or a date)
  */
-public class MapView extends JPanel implements Observer {
-    private JPopupMenu popupmenu;
-    private JMenuItem popupadd;
-    private JMenuItem popupdel;
-
-    private JFrame window;
-
+public class MapView extends JPanel implements View<MapViewController> {
     private MapViewController controller;
 
     private java.util.List<Tile> tileList;
@@ -33,37 +30,14 @@ public class MapView extends JPanel implements Observer {
     private int tileHeight;
 
     public MapView() {
-        setBackground(Color.white);
-
         tileList = new ArrayList<Tile>();
-    }
-
-    public void initialize(JFrame win, MapViewController controller, TileTypeDatabase database) {
-        this.controller = controller;
-        this.database = database;
-
-        this.addMouseListener(controller);
-
-        popupmenu = new JPopupMenu();
-
-        // Create and add a menu item
-        popupadd = new JMenuItem("Add Tile Set Image");
-        popupadd.addActionListener(controller);
-
-        popupdel = new JMenuItem("Remove Tile Set Image");
-        popupdel.addActionListener(controller);
-
-        popupmenu.add(popupadd);
-        popupmenu.add(popupdel);
-
-        window = win;
     }
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        g.setColor(Color.RED);
-        g.fillRect(getX(), getY(), getWidth(), getHeight());
+//        g.setColor(Color.RED);
+//        g.fillRect(getX(), getY(), getWidth(), getHeight());
 
         for (Tile tile : tileList) {
             int x = tileWidth * tile.getXPosition();
@@ -82,11 +56,6 @@ public class MapView extends JPanel implements Observer {
     }
 
     @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(100, 100);
-    }
-
-    @Override
     public void update(Observable o, Object arg) {
         if (arg != null) {
             Map.NotifyData notifyData = (Map.NotifyData) arg;
@@ -94,10 +63,67 @@ public class MapView extends JPanel implements Observer {
             tileWidth = notifyData.width;
             tileHeight = notifyData.height;
 
-//            final Tile lastTile = tileList.get(tileList.size()-1);
-//            setSize(tileWidth * lastTile.getXPosition(), tileHeight * lastTile.getYPosition());
+            final Tile lastTile = tileList.get(tileList.size() - 1);
+            setPreferredSize(new Dimension(tileWidth * lastTile.getXPosition(), tileHeight * lastTile.getYPosition()));
+
+            if (getMouseListeners().length == 0) {
+                addMouseListener(mouseListener);
+            }
+
+            revalidate();
 
             repaint();
         }
+    }
+
+    private MouseListener mouseListener = new MouseListener() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            final int x = Math.floorDiv(e.getX(), tileWidth);
+            final int y = Math.floorDiv(e.getY(), tileHeight);
+
+            controller.selectedTile(x, y);
+
+            repaint();
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
+    };
+
+    @Override
+    public Component getView() {
+        return this;
+    }
+
+    @Override
+    public void setController(MapViewController controller) {
+        this.controller = controller;
+    }
+
+    @Override
+    public Controller getController() {
+        return controller;
+    }
+
+    public void setDatabase(final TileTypeDatabase database) {
+        this.database = database;
     }
 }

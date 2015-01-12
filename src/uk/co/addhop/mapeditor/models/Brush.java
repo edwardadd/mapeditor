@@ -12,8 +12,8 @@ public class Brush extends Observable {
     private Tile selectedTile;
     private BrushType brushType = BrushType.PAINT;
 
-    private String tileSheetName;
-    private int tileSheetCellIndex;
+    private String tileSheetName = "Default";
+    private int tileSheetCellIndex = 0;
 
     public enum BrushType {
         PAINT,
@@ -62,5 +62,14 @@ public class Brush extends Observable {
         this.tileSheetCellIndex = tileSheetCellIndex;
 
         setChanged();
+    }
+
+    public void setTileAs(final String tileSheetName, final int index) {
+        this.tileSheetName = tileSheetName;
+        this.tileSheetCellIndex = index;
+
+        setChanged();
+
+        notifyObservers();
     }
 }

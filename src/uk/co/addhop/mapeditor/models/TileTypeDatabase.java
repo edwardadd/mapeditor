@@ -57,7 +57,7 @@ public class TileTypeDatabase extends Observable {
 
         if (imageURL != null) {
             return new ImageIcon(imageURL);
-        } else { // file is not a inside the jar file
+        } else { // file is not inside the jar file
             System.out.println("File not found in package : " + filename);
             return new ImageIcon(filename);
         }
@@ -80,13 +80,18 @@ public class TileTypeDatabase extends Observable {
      * @return
      */
     public java.util.List<DisplayCell> getListOfDisplayCells() {
-        ArrayList<DisplayCell> displayCells = new ArrayList<DisplayCell>();
+        final ArrayList<DisplayCell> displayCells = new ArrayList<DisplayCell>();
         for (TileSheet sheet : tileSheetList.values()) {
-            for (TileSheet.Cell cell : sheet.getSheet()) {
-                DisplayCell displayCell = new DisplayCell();
-                displayCell.setImage(sheet.getImage());
+
+            final java.util.List<TileSheet.Cell> sheet1 = sheet.getSheet();
+
+            for (int i = 0; i < sheet1.size(); i++) {
+                final TileSheet.Cell cell = sheet1.get(i);
+
+                final DisplayCell displayCell = new DisplayCell();
                 displayCell.setFrame(cell.getFrame());
                 displayCell.setTileSheetName(sheet.getFilename());
+                displayCell.setIndex(i);
 
                 displayCells.add(displayCell);
             }
@@ -97,8 +102,8 @@ public class TileTypeDatabase extends Observable {
 
     public static class DisplayCell {
         private Rectangle frame;
-        private Image image;
         private String tileSheetName;
+        private int index;
 
         public Rectangle getFrame() {
             return frame;
@@ -108,20 +113,20 @@ public class TileTypeDatabase extends Observable {
             this.frame = frame;
         }
 
-        public Image getImage() {
-            return image;
-        }
-
-        public void setImage(Image image) {
-            this.image = image;
-        }
-
         public String getTileSheetName() {
             return tileSheetName;
         }
 
         public void setTileSheetName(String tileSheetName) {
             this.tileSheetName = tileSheetName;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
         }
     }
 }

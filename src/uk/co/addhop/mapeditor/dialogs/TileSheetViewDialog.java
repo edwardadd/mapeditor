@@ -45,6 +45,7 @@ public class TileSheetViewDialog extends JDialog implements ActionListener {
         final ImageIcon image = TileTypeDatabase.loadImage(tileSheetFilename);
 
         tileSheet = new TileSheet();
+        tileSheet.setFilename(tileSheetFilename);
         tileSheet.setImage(image.getImage());
 
         tileSheetView.setImage(image);
@@ -107,7 +108,7 @@ public class TileSheetViewDialog extends JDialog implements ActionListener {
                 y += tileHeight;
             }
 
-            database.addTileSheet("tile", tileSheet);
+            database.addTileSheet(tileSheet.getFilename(), tileSheet);
         }
 
         dispose();
