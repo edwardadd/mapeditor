@@ -5,8 +5,6 @@
 
 package uk.co.addhop.mapeditor.command;
 
-;
-
 /**
  * @author mr edward addley
  */

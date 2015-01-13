@@ -86,7 +86,7 @@ public class TileSheetViewDialog extends JDialog implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("OK")) {
-            java.util.List<TileSheet.Cell> sheet = tileSheet.getSheet();
+            java.util.List<TileSheet.Cell> sheet = tileSheet.getCellList();
             sheet.clear();
 
             final int imageWidth = tileSheet.getImage().getWidth(null);

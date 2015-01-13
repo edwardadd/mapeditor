@@ -44,7 +44,7 @@ public class MapView extends JPanel implements View<MapViewController> {
             int y = tileHeight * tile.getYPosition();
 
             final TileSheet tileSheet = database.getTileSheet(tile.getTileSheet());
-            final TileSheet.Cell cell = tileSheet.getSheet().get(tile.getTileSetIndex());
+            final TileSheet.Cell cell = tileSheet.getCellList().get(tile.getTileSetIndex());
 
             int dx = (int) cell.getFrame().getX();
             int dy = (int) cell.getFrame().getY();

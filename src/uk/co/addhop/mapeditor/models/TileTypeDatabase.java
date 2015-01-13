@@ -83,7 +83,7 @@ public class TileTypeDatabase extends Observable {
         final Vector<DisplayCell> displayCells = new Vector<DisplayCell>();
         for (TileSheet sheet : tileSheetList.values()) {
 
-            final java.util.List<TileSheet.Cell> sheet1 = sheet.getSheet();
+            final java.util.List<TileSheet.Cell> sheet1 = sheet.getCellList();
 
             for (int i = 0; i < sheet1.size(); i++) {
                 final TileSheet.Cell cell = sheet1.get(i);
