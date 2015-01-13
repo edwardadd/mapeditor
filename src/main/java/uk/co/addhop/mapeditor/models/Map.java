@@ -45,11 +45,11 @@ public class Map extends Observable {
         notifyChanges();
     }
 
-    public void loadTileSet(String filename) {
+    public void loadTileSet(final String filename) {
 
     }
 
-    public void saveTileSet(String filename) {
+    public void saveTileSet(final String filename) {
 
     }
 

@@ -16,8 +16,7 @@ public class Main {
         });
     }
 
-    public MainApplication getApplication()
-    {
+    public MainApplication getApplication() {
         return application;
     }
 }

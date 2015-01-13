@@ -139,14 +139,11 @@ public class MainApplication {
         return menuBar;
     }
 
-    private void updateRecentMenus()
-    {
+    private void updateRecentMenus() {
         // TODO Load app preferences to do with recently open maps
-        for (int i = 0; i < 5; i++)
-        {
+        for (int i = 0; i < 5; i++) {
             String recentMap = preferences.get("RECENT_MAP_" + i, "empty");
-            if (!"empty".equals(recentMap))
-            {
+            if (!"empty".equals(recentMap)) {
 
             }
         }
