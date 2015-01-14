@@ -10,9 +10,14 @@ import java.util.List;
  * Created by edwardaddley on 06/01/15.
  */
 public class TileSheet {
-    private String filename;
-    private List<Cell> cellList = new ArrayList<Cell>();
+    private final String filename;
+    private final List<Cell> cellList = new ArrayList<Cell>();
+
     private Image image;
+
+    public TileSheet(final String filename) {
+        this.filename = filename;
+    }
 
     public class Cell {
         private Rectangle frame;
@@ -28,10 +33,6 @@ public class TileSheet {
 
     public String getFilename() {
         return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
     }
 
     public List<Cell> getCellList() {

@@ -1,8 +1,16 @@
 package uk.co.addhop.mapeditor.models;
 
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import uk.co.addhop.mapeditor.MainApplication;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -23,8 +31,7 @@ public class TileTypeDatabase extends Observable {
     }
 
     public void createDefaultTileSheet() {
-        final TileSheet tileSheet = new TileSheet();
-        tileSheet.setFilename("Default");
+        final TileSheet tileSheet = new TileSheet("Default");
 
         final BufferedImage image = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
         final Graphics graphic = image.getGraphics();
@@ -32,23 +39,91 @@ public class TileTypeDatabase extends Observable {
         graphic.fillRect(0, 0, 50, 50);
         graphic.setColor(Color.BLACK);
         graphic.drawRect(1, 1, 47, 47);
+
         tileSheet.setImage(image);
         tileSheet.addCell(0, 0, 50, 50);
 
-        tileSheetList.put("Default", tileSheet);
+        tileSheetList.put(tileSheet.getFilename(), tileSheet);
 
         setChanged();
     }
 
     public void loadDatabase() {
-        // TODO Load data
+
+        final Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
+            @Override
+            public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+                return fieldAttributes.getDeclaredType() == Image.class;
+            }
+
+            @Override
+            public boolean shouldSkipClass(Class<?> aClass) {
+                return aClass == Image.class;
+            }
+        }).create();
+
+        final FileReader reader;
+        try {
+            reader = new FileReader(MainApplication.documentPath + "/palette.json");
+
+//            final String json = readWholeFile(reader);
+            final JsonParser parser = new JsonParser();
+            final JsonReader jsonReader = new JsonReader(reader);
+            jsonReader.setLenient(true);
+
+            final JsonArray array = parser.parse(jsonReader).getAsJsonArray();
+
+            for (JsonElement element : array) {
+                final TileSheet sheet = gson.fromJson(element, TileSheet.class);
+                sheet.setImage(TileTypeDatabase.loadImage(sheet.getFilename()).getImage());
+                tileSheetList.put(sheet.getFilename(), sheet);
+            }
+
+            reader.close();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         setChanged();
 
         notifyObservers();
     }
 
     public void saveDatabase() {
-        // TODO Save data
+        final Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
+            @Override
+            public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+                return fieldAttributes.getDeclaredType() == Image.class;
+            }
+
+            @Override
+            public boolean shouldSkipClass(Class<?> aClass) {
+                return aClass == Image.class;
+            }
+        }).create();
+
+        final FileWriter writer;
+        try {
+            writer = new FileWriter(MainApplication.documentPath + "/palette.json");
+            final JsonWriter jsonWriter = new JsonWriter(writer);
+
+            jsonWriter.beginArray();
+            for (TileSheet sheet : tileSheetList.values()) {
+                if (!sheet.getFilename().equals("Default")) {
+                    gson.toJson(sheet, TileSheet.class, writer);
+                }
+            }
+            jsonWriter.endArray();
+
+            jsonWriter.flush();
+            jsonWriter.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         notifyObservers();
     }
 

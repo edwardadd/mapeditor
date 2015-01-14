@@ -14,11 +14,13 @@ import uk.co.addhop.mapeditor.toolbar.ToolbarView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.prefs.Preferences;
 
 public class MainApplication {
 
     private Preferences preferences;
+    public static String documentPath;
 
     public void init() {
 
@@ -39,6 +41,13 @@ public class MainApplication {
         // take the menu bar off the jframe
         System.setProperty("apple.laf.useScreenMenuBar", "true");
 
+        documentPath = System.getProperty("user.home") + "/Library/" + "MapEditor";
+
+        final boolean success = (new File(documentPath)).mkdirs();
+        if (!success) {
+            System.out.println("Document directory failed to create: " + documentPath);
+        }
+
         preferences = Preferences.userNodeForPackage(this.getClass());
 
         final JMenuBar menuBar = createMenuBar();
@@ -46,7 +55,7 @@ public class MainApplication {
 
         // Uses application to set the dock menu and main menu
         // This is Apple specific
-        Application application = Application.getApplication();
+        final Application application = Application.getApplication();
 
         if (application != null) {
             System.out.println("Application exists");
