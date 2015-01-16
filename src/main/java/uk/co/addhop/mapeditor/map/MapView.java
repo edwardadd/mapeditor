@@ -58,13 +58,12 @@ public class MapView extends JPanel implements View<MapViewController> {
     @Override
     public void update(Observable o, Object arg) {
         if (arg != null) {
-            Map.NotifyData notifyData = (Map.NotifyData) arg;
-            tileList = notifyData.tileList;
-            tileWidth = notifyData.width;
-            tileHeight = notifyData.height;
+            final Map map = (Map) arg;
+            tileList = map.getMapTiles();
+            tileWidth = map.getTileWidth();
+            tileHeight = map.getTileHeight();
 
-            final Tile lastTile = tileList.get(tileList.size() - 1);
-            setPreferredSize(new Dimension(tileWidth * lastTile.getXPosition(), tileHeight * lastTile.getYPosition()));
+            setPreferredSize(new Dimension(tileWidth * map.getMapWidth(), tileHeight * map.getMapHeight()));
 
             if (getMouseListeners().length == 0) {
                 addMouseListener(mouseListener);

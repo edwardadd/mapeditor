@@ -3,6 +3,7 @@ package uk.co.addhop.mapeditor.dialogs;
 import uk.co.addhop.mapeditor.models.Map;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -13,8 +14,19 @@ public class NewMapDialogViewController extends javax.swing.JDialog implements A
     private javax.swing.JButton cancelButton;
     private javax.swing.JTextField widthField;
     private javax.swing.JTextField heightField;
-    private javax.swing.JTextField filesetField;
-    private javax.swing.JButton filesetButton;
+    private javax.swing.JTextField tileWidthField;
+    private javax.swing.JTextField tileHeightField;
+
+    private final Component[] tabOrder = new Component[]{
+            nameField,
+            descField,
+            widthField,
+            heightField,
+            tileWidthField,
+            tileHeightField,
+            okButton,
+            cancelButton
+    };
 
     private Map parent;
 
@@ -24,19 +36,64 @@ public class NewMapDialogViewController extends javax.swing.JDialog implements A
 
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
-        widthField = new javax.swing.JTextField(10);
-        heightField = new javax.swing.JTextField(10);
-        //javax.swing.JSpinner.NumberEditor(widthSpinner);
-        //javax.swing.JSpinner.NumberEditor(heightSpinner);
-        nameField = new javax.swing.JTextField(10);
-        descField = new javax.swing.JTextField(10);
-        filesetField = new javax.swing.JTextField(10);
-        filesetButton = new javax.swing.JButton();
+        widthField = new javax.swing.JTextField("10", 10);
+        heightField = new javax.swing.JTextField("10", 10);
+        nameField = new javax.swing.JTextField("New Map", 10);
+        descField = new javax.swing.JTextField("A description...", 10);
+        tileWidthField = new javax.swing.JTextField("50", 10);
+        tileHeightField = new javax.swing.JTextField("50", 10);
 
         //set layout
         java.awt.GridBagConstraints gridBagConstraints;
         getContentPane().setLayout(new java.awt.GridBagLayout());
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        getContentPane().setFocusTraversalPolicy(new FocusTraversalPolicy() {
+            @Override
+            public Component getComponentAfter(Container aContainer, Component aComponent) {
+                for (int i = 0; i < tabOrder.length; i++) {
+                    Component component = tabOrder[i];
+                    if (aComponent.equals(component)) {
+                        if (i == tabOrder.length - 1) {
+                            return tabOrder[0];
+                        }
+                        return tabOrder[i + 1];
+                    }
+                }
+
+                return null;
+            }
+
+            @Override
+            public Component getComponentBefore(Container aContainer, Component aComponent) {
+                for (int i = 0; i < tabOrder.length; i++) {
+                    Component component = tabOrder[i];
+                    if (aComponent.equals(component)) {
+                        if (i == 0) {
+                            return tabOrder[tabOrder.length - 1];
+                        }
+                        return tabOrder[i - 1];
+                    }
+                }
+
+                return null;
+            }
+
+            @Override
+            public Component getFirstComponent(Container aContainer) {
+                return nameField;
+            }
+
+            @Override
+            public Component getLastComponent(Container aContainer) {
+                return cancelButton;
+            }
+
+            @Override
+            public Component getDefaultComponent(Container aContainer) {
+                return okButton;
+            }
+        });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -63,7 +120,7 @@ public class NewMapDialogViewController extends javax.swing.JDialog implements A
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        getContentPane().add(new JLabel("Width :"), gridBagConstraints);
+        getContentPane().add(new JLabel("Map Width :"), gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -74,7 +131,7 @@ public class NewMapDialogViewController extends javax.swing.JDialog implements A
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        getContentPane().add(new JLabel("Height :"), gridBagConstraints);
+        getContentPane().add(new JLabel("Map Height :"), gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -85,26 +142,29 @@ public class NewMapDialogViewController extends javax.swing.JDialog implements A
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
-        getContentPane().add(new JLabel("FileSet :"), gridBagConstraints);
+        getContentPane().add(new JLabel("Tile Width :"), gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 3;
-        getContentPane().add(filesetField, gridBagConstraints);
+        getContentPane().add(tileWidthField, gridBagConstraints);
 
-        filesetButton.setText("...");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        getContentPane().add(new JLabel("Tile Height :"), gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 3;
-        getContentPane().add(filesetButton, gridBagConstraints);
-        filesetButton.addActionListener(this);
+        getContentPane().add(tileHeightField, gridBagConstraints);
 
         okButton.setText("Ok");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         //gridBagConstraints.gridwidth = 3;
         getContentPane().add(okButton, gridBagConstraints);
         okButton.addActionListener(this);
@@ -112,7 +172,7 @@ public class NewMapDialogViewController extends javax.swing.JDialog implements A
         cancelButton.setText("Cancel");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         //gridBagConstraints.gridwidth = 3;
         getContentPane().add(cancelButton, gridBagConstraints);
         cancelButton.addActionListener(this);
@@ -122,38 +182,15 @@ public class NewMapDialogViewController extends javax.swing.JDialog implements A
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == okButton) {
-            parent.createMap(nameField.getText(), Integer.parseInt(widthField.getText()), Integer.parseInt(heightField.getText()));
+            // TODO Validation on text fields
+            parent.createMap(nameField.getText(),
+                    Integer.parseInt(widthField.getText()), Integer.parseInt(heightField.getText()),
+                    Integer.parseInt(tileWidthField.getText()), Integer.parseInt(tileHeightField.getText()));
             dispose();
         }
 
         if (e.getSource() == cancelButton) {
             dispose();
-        }
-
-        if (e.getSource() == filesetButton) {
-            //javax.swing.JFileDialog fd = new javax.swing.JFileDialog(this);
-            //fd.setVisible(true);
-            //String filename = fd.getDirectory()+fd.getFile();
-
-            //filesetField.setText(filename);
-
-            JFileChooser chooser = new JFileChooser();
-            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-            // Note: source for ExampleFileFilter can be found in FileChooserDemo,
-            // under the demo/jfc directory in the Java 2 SDK, Standard Edition.
-            //ExampleFileFilter filter = new ExampleFileFilter();
-            //filter.addExtension("jpg");
-            //filter.addExtension("gif");
-            //filter.setDescription("JPG & GIF Images");
-            //chooser.setFileFilter(filter);
-            int returnVal = chooser.showOpenDialog(this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                //System.out.println("You chose to open this file: " +
-                String t = chooser.getSelectedFile().getAbsolutePath();
-                filesetField.setText(t);
-            }
-
         }
     }
 }
