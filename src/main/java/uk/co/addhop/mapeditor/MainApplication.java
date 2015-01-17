@@ -1,6 +1,8 @@
 package uk.co.addhop.mapeditor;
 
+import com.apple.eawt.AppEvent;
 import com.apple.eawt.Application;
+import com.apple.eawt.QuitResponse;
 import uk.co.addhop.mapeditor.map.MapView;
 import uk.co.addhop.mapeditor.map.MapViewController;
 import uk.co.addhop.mapeditor.menubar.MainMenuBar;
@@ -22,9 +24,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
-public class MainApplication {
+public class MainApplication implements com.apple.eawt.QuitHandler {
+
+    public static final int MAX_OPENED_WINDOWS = 10;
+    public static final String PREFS_LAST_OPENED_MAP = "LAST_OPENED_MAP_";
 
     private Preferences preferences;
     public static String documentPath;
@@ -33,6 +39,8 @@ public class MainApplication {
     private MainMenuBar mainMenuBar;
     private java.util.List<MapWindow> mapWindowList = new ArrayList<MapWindow>();
     private MapWindow focused;
+    private PopupMenu recentMenu;
+    private MainMenuBarController mainMenuBarController;
 
     public void init() {
 
@@ -62,7 +70,7 @@ public class MainApplication {
 
         preferences = Preferences.userNodeForPackage(this.getClass());
 
-        final MainMenuBarController mainMenuBarController = new MainMenuBarController();
+        mainMenuBarController = new MainMenuBarController();
         mainMenuBarController.setModel(this);
 
         mainMenuBar = new MainMenuBar();
@@ -80,14 +88,25 @@ public class MainApplication {
 
             application.setDefaultMenuBar(menuBar);
             application.setDockMenu(popupMenu);
+            application.setQuitHandler(this);
 
             updateRecentMenus();
 
             tileTypeDatabase = new TileTypeDatabase();
             tileTypeDatabase.loadDatabase();
 
-//            final Map mapModel = new Map();
-//            createMapWindow(mapModel);
+            loadPreviouslyOpenedMaps();
+        }
+    }
+
+    private void loadPreviouslyOpenedMaps() {
+        // Load any previously open map windows
+        for (int i = 0; i < MAX_OPENED_WINDOWS; i++) {
+            final String recentMap = preferences.get(PREFS_LAST_OPENED_MAP + i, "empty");
+            if (!"empty".equals(recentMap)) {
+                final Map map = new Map(recentMap);
+                createMapWindow(map);
+            }
         }
     }
 
@@ -245,8 +264,9 @@ public class MainApplication {
     }
 
     private PopupMenu createPopupMenu() {
-        final PopupMenu recentMenu = new PopupMenu("Recent maps");
-        recentMenu.add(new MenuItem("Item 1"));
+        recentMenu = new PopupMenu("Recent maps");
+
+        updateRecentMenus();
 
         // Dock popup menu requires AWT classes
         final PopupMenu popupMenu = new PopupMenu("Map Editor");
@@ -257,15 +277,35 @@ public class MainApplication {
     private void updateRecentMenus() {
         // TODO Load app preferences to do with recently open maps
         for (int i = 0; i < 5; i++) {
-            String recentMap = preferences.get("RECENT_MAP_" + i, "empty");
+            final String recentMap = preferences.get("RECENT_MAP_" + i, "empty");
             if (!"empty".equals(recentMap)) {
-
+                recentMenu.add(new MenuItem(recentMap));
             }
         }
     }
 
     public MapWindow getFocusedWindow() {
         return focused;
+    }
+
+    public List<MapWindow> getMapWindowList() {
+        return mapWindowList;
+    }
+
+    @Override
+    public void handleQuitRequestWith(AppEvent.QuitEvent quitEvent, QuitResponse quitResponse) {
+        System.out.println("handleQuitRequestWith " + quitEvent.toString());
+
+        // Save all to recent list
+        for (int i = 0; i < mapWindowList.size(); i++) {
+            final MapWindow window = mapWindowList.get(i);
+            final Map map = window.getMap();
+            if (map.getFileName() != null) {
+                preferences.put(PREFS_LAST_OPENED_MAP + i, map.getFileName());
+            }
+        }
+
+        quitResponse.performQuit();
     }
 
     public static class MapWindow extends JFrame {
