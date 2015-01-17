@@ -15,7 +15,7 @@ import java.util.Observable;
  * <p/>
  * Created by edwardaddley on 12/01/15.
  */
-public class NewPaletteView extends JPanel implements View<PaletteViewController> {
+public class NewPaletteView extends JPanel implements View<NewPaletteView, PaletteViewController> {
 
     private PaletteViewController controller;
     private JList<TileTypeDatabase.DisplayCell> jList;
@@ -47,7 +47,7 @@ public class NewPaletteView extends JPanel implements View<PaletteViewController
     }
 
     @Override
-    public Component getView() {
+    public NewPaletteView getView() {
         return this;
     }
 

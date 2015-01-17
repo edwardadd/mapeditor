@@ -20,7 +20,7 @@ import java.util.Observable;
  * @author (your name)
  * @version (a version number or a date)
  */
-public class MapView extends JPanel implements View<MapViewController> {
+public class MapView extends JPanel implements View<MapView, MapViewController> {
     private MapViewController controller;
 
     private java.util.List<Tile> tileList;
@@ -108,7 +108,7 @@ public class MapView extends JPanel implements View<MapViewController> {
     };
 
     @Override
-    public Component getView() {
+    public MapView getView() {
         return this;
     }
 

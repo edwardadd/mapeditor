@@ -1,15 +1,14 @@
 package uk.co.addhop.mapeditor.interfaces;
 
-import java.awt.*;
 import java.util.Observer;
 
 /**
  * View
  * Created by edwardaddley on 12/01/15.
  */
-public interface View<C extends Controller<?>> extends Observer {
+public interface View<V, C extends Controller<?>> extends Observer {
 
-    public Component getView();
+    public V getView();
 
     public void setController(final C controller);
 

@@ -3,6 +3,8 @@ package uk.co.addhop.mapeditor;
 import com.apple.eawt.Application;
 import uk.co.addhop.mapeditor.map.MapView;
 import uk.co.addhop.mapeditor.map.MapViewController;
+import uk.co.addhop.mapeditor.menubar.MainMenuBar;
+import uk.co.addhop.mapeditor.menubar.MainMenuBarController;
 import uk.co.addhop.mapeditor.models.Brush;
 import uk.co.addhop.mapeditor.models.Map;
 import uk.co.addhop.mapeditor.models.TileTypeDatabase;
@@ -21,6 +23,9 @@ public class MainApplication {
 
     private Preferences preferences;
     public static String documentPath;
+    private TileTypeDatabase tileTypeDatabase;
+
+    private MainMenuBar mainMenuBar;
 
     public void init() {
 
@@ -50,7 +55,10 @@ public class MainApplication {
 
         preferences = Preferences.userNodeForPackage(this.getClass());
 
-        final JMenuBar menuBar = createMenuBar();
+        final MainMenuBarController mainMenuBarController = new MainMenuBarController();
+        mainMenuBar = new MainMenuBar();
+        mainMenuBar.setController(mainMenuBarController);
+        final JMenuBar menuBar = mainMenuBar.getView();
         final PopupMenu popupMenu = createPopupMenu();
 
         // Uses application to set the dock menu and main menu
@@ -65,59 +73,66 @@ public class MainApplication {
 
             updateRecentMenus();
 
-            final JFrame appWindow = new JFrame("Map Editor v0.1");
-
-            final TileTypeDatabase tileTypeDatabase = new TileTypeDatabase();
+            tileTypeDatabase = new TileTypeDatabase();
             tileTypeDatabase.loadDatabase();
 
-            final Brush brush = new Brush();
-
-            // Set up main map panel
             final Map mapModel = new Map();
-            final MapViewController mapViewController = new MapViewController();
-            mapViewController.setBrush(brush);
-            mapViewController.setModel(mapModel);
+            createMapWindow(mapModel);
+        }
+    }
 
-            final MapView mapView = new MapView();
-            mapView.setDatabase(tileTypeDatabase);
-            mapView.setController(mapViewController);
+    private JFrame createMapWindow(final Map mapModel) {
 
-            mapModel.setDatabase(tileTypeDatabase);
-            mapModel.addObserver(mapView);
+        final JFrame appWindow = new JFrame("Map Editor v0.1");
 
-            // Set up palette panel
-            final PaletteViewController paletteViewController = new PaletteViewController();
+        final Brush brush = new Brush();
+
+        // Set up main map panel
+        final MapViewController mapViewController = new MapViewController();
+        mapViewController.setBrush(brush);
+        mapViewController.setModel(mapModel);
+
+        final MapView mapView = new MapView();
+        mapView.setDatabase(tileTypeDatabase);
+        mapView.setController(mapViewController);
+
+        mapModel.setDatabase(tileTypeDatabase);
+        mapModel.addObserver(mapView);
+
+        // Set up palette panel
+        final PaletteViewController paletteViewController = new PaletteViewController();
 //            final PaletteView paletteView = new PaletteView();
-            final NewPaletteView paletteView = new NewPaletteView();
-            paletteViewController.setModel(brush);
-            paletteView.setDatabase(tileTypeDatabase);
-            paletteView.setController(paletteViewController);
+        final NewPaletteView paletteView = new NewPaletteView();
+        paletteViewController.setModel(brush);
+        paletteView.setDatabase(tileTypeDatabase);
+        paletteView.setController(paletteViewController);
 
-            tileTypeDatabase.addObserver(paletteView);
+        tileTypeDatabase.addObserver(paletteView);
 
-            // Set up toolbar
-            final ToolbarModel toolbarModel = new ToolbarModel();
-            final ToolbarView toolbarView = new ToolbarView();
-            final ToolbarController toolbarController = new ToolbarController(toolbarModel, mapModel);
+        // Set up toolbar
+        final ToolbarModel toolbarModel = new ToolbarModel();
+        final ToolbarView toolbarView = new ToolbarView();
+        final ToolbarController toolbarController = new ToolbarController(toolbarModel, mapModel);
 
-            toolbarModel.addObserver(toolbarView);
-            toolbarView.makeToolbar(toolbarController);
+        toolbarModel.addObserver(toolbarView);
+        toolbarView.makeToolbar(toolbarController);
 
-            // Set up split
-            appWindow.getContentPane().setLayout(new BorderLayout());
+        // Set up split
+        appWindow.getContentPane().setLayout(new BorderLayout());
 
-            final JScrollPane westScroll = new JScrollPane(paletteView, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            final JScrollPane centerScroll = new JScrollPane(mapView, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        final JScrollPane westScroll = new JScrollPane(paletteView, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        final JScrollPane centerScroll = new JScrollPane(mapView, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-            appWindow.getContentPane().add(toolbarView, BorderLayout.PAGE_START);
-            appWindow.getContentPane().add(westScroll, BorderLayout.WEST);
-            appWindow.getContentPane().add(centerScroll, BorderLayout.CENTER);
-            appWindow.getContentPane().add(new JPanel(), BorderLayout.SOUTH);
+        appWindow.getContentPane().add(toolbarView, BorderLayout.PAGE_START);
+        appWindow.getContentPane().add(westScroll, BorderLayout.WEST);
+        appWindow.getContentPane().add(centerScroll, BorderLayout.CENTER);
+        appWindow.getContentPane().add(new JPanel(), BorderLayout.SOUTH);
 //        appWindow.pack();
 
-            appWindow.setSize(1024, 800);
-            appWindow.setVisible(true);
-        }
+        appWindow.setSize(1024, 800);
+        appWindow.setVisible(true);
+
+        return appWindow;
     }
 
     private PopupMenu createPopupMenu() {
@@ -128,24 +143,6 @@ public class MainApplication {
         PopupMenu popupMenu = new PopupMenu("Map Editor");
         popupMenu.add(recentMenu);
         return popupMenu;
-    }
-
-    private JMenuBar createMenuBar() {
-        final JMenu fileOpenRecentMenu = new JMenu("Open Recent");
-
-        final JMenu menu = new JMenu("File");
-        menu.add(new JMenuItem("New..."));
-        menu.add(new JMenuItem("Open..."));
-        menu.add(fileOpenRecentMenu);
-        menu.add(new JMenuItem("Close Map"));
-        menu.addSeparator();
-        menu.add(new JMenuItem("Settings..."));
-        menu.addSeparator();
-        menu.add(new JMenuItem("Save All"));
-
-        final JMenuBar menuBar = new JMenuBar();
-        menuBar.add(menu);
-        return menuBar;
     }
 
     private void updateRecentMenus() {

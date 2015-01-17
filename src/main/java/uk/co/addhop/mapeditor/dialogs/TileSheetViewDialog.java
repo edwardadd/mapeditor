@@ -22,14 +22,11 @@ public class TileSheetViewDialog extends JDialog implements ActionListener {
     private TileSheet tileSheet;
     private TileSheetView tileSheetView;
 
-    private int tileWidth;
-    private int tileHeight;
+    private JTextField widthText;
+    private JTextField heightText;
 
     public TileSheetViewDialog(Frame owner, String title, boolean modal, String tileSheetFilename, Map mapModel) {
         super(owner, title, modal);
-
-        tileWidth = mapModel.getTileWidth();
-        tileHeight = mapModel.getTileHeight();
 
         database = mapModel.getDatabase();
 
@@ -61,19 +58,32 @@ public class TileSheetViewDialog extends JDialog implements ActionListener {
 
         setLayout(new BorderLayout());
 
+        final JLabel widthLabel = new JLabel("Tile Width:");
+        final JLabel heightLabel = new JLabel("Tile Height:");
+        widthText = new JTextField("50", 10);
+        heightText = new JTextField("50", 10);
+
+        final JPanel topPanel = new JPanel(new FlowLayout());
+        topPanel.add(widthLabel);
+        topPanel.add(widthText);
+        topPanel.add(heightLabel);
+        topPanel.add(heightText);
+
+        add(topPanel, BorderLayout.PAGE_START);
+
         tileSheetView = new TileSheetView();
         add(tileSheetView, BorderLayout.CENTER);
 
-        JButton okButton = new JButton("OK");
+        final JButton okButton = new JButton("OK");
         okButton.setActionCommand("OK");
 
-        JButton cancelButton = new JButton("Cancel");
+        final JButton cancelButton = new JButton("Cancel");
         cancelButton.setActionCommand("CANCEL");
 
         okButton.addActionListener(this);
         cancelButton.addActionListener(this);
 
-        JPanel panel = new JPanel(new FlowLayout());
+        final JPanel panel = new JPanel(new FlowLayout());
 
         panel.add(okButton);
         panel.add(cancelButton);
@@ -90,6 +100,9 @@ public class TileSheetViewDialog extends JDialog implements ActionListener {
 
             final int imageWidth = tileSheet.getImage().getWidth(null);
             final int imageHeight = tileSheet.getImage().getHeight(null);
+
+            final int tileWidth = Integer.parseInt(widthText.getText());
+            final int tileHeight = Integer.parseInt(heightText.getText());
 
 //            final int remainderWidth = imageWidth % tileWidth;
 //            final int remainderHeight = imageHeight % imageHeight;
