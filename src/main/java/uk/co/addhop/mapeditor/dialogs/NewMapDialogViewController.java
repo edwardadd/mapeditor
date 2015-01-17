@@ -1,5 +1,6 @@
 package uk.co.addhop.mapeditor.dialogs;
 
+import uk.co.addhop.mapeditor.MainApplication;
 import uk.co.addhop.mapeditor.models.Map;
 
 import javax.swing.*;
@@ -28,9 +29,9 @@ public class NewMapDialogViewController extends javax.swing.JDialog implements A
             cancelButton
     };
 
-    private Map parent;
+    private MainApplication parent;
 
-    public NewMapDialogViewController(final JFrame owner, final Map _parent, final boolean modal) {
+    public NewMapDialogViewController(final JFrame owner, final MainApplication _parent, final boolean modal) {
         super(owner, "New Map...", modal);
         parent = _parent;
 
@@ -183,14 +184,15 @@ public class NewMapDialogViewController extends javax.swing.JDialog implements A
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == okButton) {
             // TODO Validation on text fields
-            parent.createMap(nameField.getText(),
+
+            final Map map = new Map();
+            map.createMap(nameField.getText(),
                     Integer.parseInt(widthField.getText()), Integer.parseInt(heightField.getText()),
                     Integer.parseInt(tileWidthField.getText()), Integer.parseInt(tileHeightField.getText()));
-            dispose();
+
+            parent.createMapWindow(map);
         }
 
-        if (e.getSource() == cancelButton) {
-            dispose();
-        }
+        dispose();
     }
 }

@@ -1,6 +1,5 @@
 package uk.co.addhop.mapeditor.toolbar;
 
-import uk.co.addhop.mapeditor.dialogs.NewMapDialogViewController;
 import uk.co.addhop.mapeditor.dialogs.TileSheetViewDialog;
 import uk.co.addhop.mapeditor.models.Map;
 
@@ -25,11 +24,6 @@ public class ToolbarController implements ActionListener {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-
-        if (e.getActionCommand().equals("newMap")) {
-            NewMapDialogViewController dialogViewController = new NewMapDialogViewController(null, mapModel, true);
-            dialogViewController.setVisible(true);
-        }
 
         if (e.getActionCommand().equals("addTileSet")) {
             //javax.swing.JFileDialog fd = new javax.swing.JFileDialog(this);

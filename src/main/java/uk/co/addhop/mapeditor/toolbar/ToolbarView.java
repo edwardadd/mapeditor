@@ -11,11 +11,16 @@ import java.util.Observer;
  */
 public class ToolbarView extends JToolBar implements Observer {
 
-    private JButton newButton;
-    private JButton loadButton;
-    private JButton saveButton;
+    private JButton mazeButton;
+    private JButton worldButton;
+    private JButton cityButton;
+
+    private JButton selectButton;
+    private JButton fillButton;
+    private JButton magicButton;
 
     private JButton addTileSheetButton;
+    private JButton viewLibraryButton;
     private JButton helpButton;
 
     public ToolbarView() {
@@ -24,13 +29,16 @@ public class ToolbarView extends JToolBar implements Observer {
 
     public void makeToolbar(final ToolbarController controller) {
 
-//        this.setOpaque(false);
-
-        newButton = makeButton("New...", controller, "newMap");
-        loadButton = makeButton("Load...", controller, "loadMap");
-        saveButton = makeButton("Save...", controller, "saveMap");
+        mazeButton = makeButton("Generate Maze...", controller, "MAZE");
+        worldButton = makeButton("Generate World...", controller, "WORLD");
+        cityButton = makeButton("Generate City...", controller, "CITY");
         addSeparator();
-        addTileSheetButton = makeButton("Add...", controller, "addTileSet");
+        selectButton = makeButton("Select", controller, "SELECT");
+        fillButton = makeButton("Fill", controller, "FILL");
+        magicButton = makeButton("Magic ", controller, "MAGIC");
+        addSeparator();
+        addTileSheetButton = makeButton("Add Tileset...", controller, "addTileSet");
+        viewLibraryButton = makeButton("View library...", controller, "viewLibrary");
         addSeparator();
         helpButton = makeButton("Help", controller, "help");
     }

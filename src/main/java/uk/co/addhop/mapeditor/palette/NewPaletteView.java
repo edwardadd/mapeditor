@@ -86,6 +86,7 @@ public class NewPaletteView extends JPanel implements View<NewPaletteView, Palet
     public class TileCellRenderer extends JPanel implements ListCellRenderer<TileTypeDatabase.DisplayCell> {
 
         private int GAP = 5;
+        private int SIZE = 50;
 
         private TileTypeDatabase.DisplayCell cell;
         private boolean isSelected;
@@ -98,11 +99,11 @@ public class NewPaletteView extends JPanel implements View<NewPaletteView, Palet
         public Component getListCellRendererComponent(JList<? extends TileTypeDatabase.DisplayCell> list, TileTypeDatabase.DisplayCell value, int index, boolean isSelected, boolean cellHasFocus) {
             cell = value;
 
-            final Dimension dimension = new Dimension(cell.getFrame().getSize());
-            dimension.width += GAP * 2;
-            dimension.height += GAP * 2;
+//            final Dimension dimension = new Dimension(cell.getFrame().getSize());
+//            dimension.width += GAP * 2;
+//            dimension.height += GAP * 2;
 
-            setPreferredSize(dimension);
+            setPreferredSize(new Dimension(SIZE + GAP * 2, SIZE + GAP * 2));
 
             this.isSelected = isSelected;
             if (isSelected) {
@@ -118,8 +119,11 @@ public class NewPaletteView extends JPanel implements View<NewPaletteView, Palet
             final Image image = database.getTileSheet(cell.getTileSheetName()).getImage();
 
             final Rectangle frame = cell.getFrame();
+//            g.drawImage(image,
+//                    GAP, GAP, (int) frame.getWidth() + GAP, (int) frame.getHeight() + GAP,
+//                    (int) frame.getX(), (int) frame.getY(), (int) (frame.getX() + frame.getWidth()), (int) (frame.getY() + frame.getHeight()), null);
             g.drawImage(image,
-                    GAP, GAP, (int) frame.getWidth() + GAP, (int) frame.getHeight() + GAP,
+                    GAP, GAP, SIZE + GAP, SIZE + GAP,
                     (int) frame.getX(), (int) frame.getY(), (int) (frame.getX() + frame.getWidth()), (int) (frame.getY() + frame.getHeight()), null);
 
             if (isSelected) {
