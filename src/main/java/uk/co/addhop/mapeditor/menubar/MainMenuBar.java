@@ -4,8 +4,11 @@ import uk.co.addhop.mapeditor.interfaces.Controller;
 import uk.co.addhop.mapeditor.interfaces.View;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.Observable;
 
 /**
@@ -15,37 +18,50 @@ import java.util.Observable;
  */
 public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, ActionListener {
 
+    private boolean appMenuBar;
     private JMenuBar menuBar;
     private MainMenuBarController controller;
+    private final JMenu fileOpenRecentMenu;
+    private final JMenu windowMenu;
 
     public MainMenuBar() {
-        final JMenu fileOpenRecentMenu = new JMenu("Open Recent");
-
-        final JMenu menu = new JMenu("File");
-        menu.add(createMenuItem("New...", "NEW", this));
-        menu.add(createMenuItem("Open...", "LOAD", this));
-        menu.add(createMenuItem("Save", "SAVE", this));
-        menu.add(createMenuItem("Save As...", "SAVE_AS", this));
-        menu.add(fileOpenRecentMenu);
-        menu.add(createMenuItem("Close", "CLOSE", this));
-        menu.addSeparator();
-        menu.add(createMenuItem("Save All", "SAVE_ALL", this));
-
-//        menu.addActionListener(this);
-
-        menuBar = new JMenuBar();
-        menuBar.add(menu);
+        this(false);
     }
 
-    private JMenuItem createMenuItem(final String label, final String action, final ActionListener listener) {
+    public MainMenuBar(final boolean appMenuBar) {
+        this.appMenuBar = appMenuBar;
+
+        fileOpenRecentMenu = new JMenu("Open Recent");
+        fileOpenRecentMenu.setMnemonic(KeyEvent.VK_R);
+
+        final JMenu menu = new JMenu("File");
+        menu.add(createMenuItem("New...", "NEW", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
+        menu.add(createMenuItem("Open...", "LOAD", KeyEvent.VK_O, KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
+        menu.add(createMenuItem("Save", "SAVE", KeyEvent.VK_S, KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
+        menu.add(createMenuItem("Save As...", "SAVE_AS", KeyEvent.VK_A, KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.SHIFT_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
+        menu.add(fileOpenRecentMenu);
+        menu.add(createMenuItem("Close", "CLOSE", KeyEvent.VK_C, KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
+        menu.addSeparator();
+        menu.add(createMenuItem("Save All", "SAVE_ALL", KeyEvent.VK_L, null));
+
+        windowMenu = new JMenu("Window");
+        menuBar = new JMenuBar();
+        menuBar.add(menu);
+        menuBar.add(windowMenu);
+    }
+
+    private JMenuItem createMenuItem(final String label, final String action, final int m, final KeyStroke keyStroke) {
         final JMenuItem item = new JMenuItem(label);
         item.setActionCommand(action);
-        item.addActionListener(listener);
+        item.setMnemonic(m);
+        item.setAccelerator(keyStroke);
+        item.addActionListener(this);
         return item;
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(final ActionEvent e) {
+        System.out.println("actionPerformed - " + e.getActionCommand());
 
         if (e.getActionCommand().equals("NEW")) {
             controller.newMap();
@@ -78,5 +94,21 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
     @Override
     public void update(Observable o, Object arg) {
 
+    }
+
+    public JMenu getFileOpenRecentMenu() {
+        return fileOpenRecentMenu;
+    }
+
+    public JMenu getWindowMenu() {
+        return windowMenu;
+    }
+
+    public boolean isAppMenuBar() {
+        return appMenuBar;
+    }
+
+    public void setAppMenuBar(boolean appMenuBar) {
+        this.appMenuBar = appMenuBar;
     }
 }

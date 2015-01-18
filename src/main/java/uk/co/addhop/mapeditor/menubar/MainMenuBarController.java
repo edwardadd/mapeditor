@@ -14,10 +14,15 @@ import javax.swing.*;
  */
 public class MainMenuBarController implements Controller<MainApplication> {
     private MainApplication model;
+    private MainApplication.MapWindow parent;
 
     @Override
     public void setModel(final MainApplication model) {
         this.model = model;
+    }
+
+    public void setParent(final MainApplication.MapWindow mapWindow) {
+        parent = mapWindow;
     }
 
     public void newMap() {
@@ -30,12 +35,20 @@ public class MainMenuBarController implements Controller<MainApplication> {
     public void saveMap() {
         // Get currently focused window and tell it to save map
 
-        final MainApplication.MapWindow window = model.getFocusedWindow();
+        final MainApplication.MapWindow window;
+
+        if (parent != null) {
+            window = parent;
+        } else {
+            window = model.getFocusedWindow();
+        }
 
         if (window != null) {
             final Map map = window.getMap();
             if (map.getFileName() != null) {
                 map.saveTileSet(map.getFileName());
+
+                model.addToRecenList(map.getFileName());
             } else {
                 saveMapAs();
             }
@@ -61,10 +74,26 @@ public class MainMenuBarController implements Controller<MainApplication> {
     public void closeMap() {
         // Get currently focused window
         // Close the window
+
+        final MainApplication.MapWindow window;
+
+        if (parent != null) {
+            window = parent;
+        } else {
+            window = model.getFocusedWindow();
+        }
+
+        window.dispose();
     }
 
     public void saveMapAs() {
-        final MainApplication.MapWindow window = model.getFocusedWindow();
+        final MainApplication.MapWindow window;
+
+        if (parent != null) {
+            window = parent;
+        } else {
+            window = model.getFocusedWindow();
+        }
 
         if (window != null) {
 
@@ -77,6 +106,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
                 window.getMap().saveTileSet(filePath);
 
                 // Add to most recent file list
+                model.addToRecenList(window.getMap().getFileName());
             }
         }
     }

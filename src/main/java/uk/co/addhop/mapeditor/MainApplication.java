@@ -18,19 +18,21 @@ import uk.co.addhop.mapeditor.toolbar.ToolbarView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 import java.io.File;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 public class MainApplication implements com.apple.eawt.QuitHandler {
 
     public static final int MAX_OPENED_WINDOWS = 10;
     public static final String PREFS_LAST_OPENED_MAP = "LAST_OPENED_MAP_";
+    public static final String PREFS_RECENT_MAP = "RECENT_MAP_";
+    public static final int MAX_RECENTLIST_SIZE = 5;
 
     private Preferences preferences;
     public static String documentPath;
@@ -41,6 +43,8 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
     private MapWindow focused;
     private PopupMenu recentMenu;
     private MainMenuBarController mainMenuBarController;
+
+    private Deque<String> recentList = new ArrayDeque<String>();
 
     public void init() {
 
@@ -70,6 +74,8 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
 
         preferences = Preferences.userNodeForPackage(this.getClass());
 
+        updateRecentListFromPrefs();
+
         mainMenuBarController = new MainMenuBarController();
         mainMenuBarController.setModel(this);
 
@@ -89,6 +95,8 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
             application.setDefaultMenuBar(menuBar);
             application.setDockMenu(popupMenu);
             application.setQuitHandler(this);
+//            application.setQuitStrategy(QuitStrategy.SYSTEM_EXIT_0);
+            application.disableSuddenTermination();
 
             updateRecentMenus();
 
@@ -112,6 +120,9 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
 
     public JFrame createMapWindow(final Map mapModel) {
 
+        if (mapModel.getFileName() != null) {
+            addToRecenList(mapModel.getFileName());
+        }
 
         final Brush brush = new Brush();
 
@@ -146,10 +157,18 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         toolbarModel.addObserver(toolbarView);
         toolbarView.makeToolbar(toolbarController);
 
-
         final MapWindow appWindow = new MapWindow(mapModel, brush);
 
+        final MainMenuBar menuBar = new MainMenuBar();
+        final MainMenuBarController menuBarController = new MainMenuBarController();
+        menuBarController.setModel(MainApplication.this);
+        menuBarController.setParent(appWindow);
+        menuBar.setController(menuBarController);
+
+        appWindow.setJMenuBar(menuBar.getView());
         mapWindowList.add(appWindow);
+
+        updateWindowMenus();
 
         // Set up split
         appWindow.getContentPane().setLayout(new BorderLayout());
@@ -165,6 +184,7 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
 
         appWindow.setSize(1024, 800);
         appWindow.setVisible(true);
+        appWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         appWindow.addWindowListener(new WindowListener() {
             @Override
@@ -224,6 +244,8 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
                 } else {
                     mapModel.saveTileSet(mapModel.getFileName());
                 }
+
+//                appWindow.dispose();
             }
 
             @Override
@@ -263,6 +285,15 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         return appWindow;
     }
 
+    private void updateWindowMenus() {
+        final JMenu menu = mainMenuBar.getWindowMenu();
+        menu.removeAll();
+
+        for (MapWindow window : mapWindowList) {
+            menu.add(new JMenuItem(window.getTitle()));
+        }
+    }
+
     private PopupMenu createPopupMenu() {
         recentMenu = new PopupMenu("Recent maps");
 
@@ -274,14 +305,57 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         return popupMenu;
     }
 
-    private void updateRecentMenus() {
-        // TODO Load app preferences to do with recently open maps
-        for (int i = 0; i < 5; i++) {
-            final String recentMap = preferences.get("RECENT_MAP_" + i, "empty");
+    private void updateRecentListFromPrefs() {
+        for (int i = 0; i < MAX_RECENTLIST_SIZE; i++) {
+            final String recentMap = preferences.get(PREFS_RECENT_MAP + i, "empty");
             if (!"empty".equals(recentMap)) {
-                recentMenu.add(new MenuItem(recentMap));
+                recentList.push(recentMap);
             }
         }
+    }
+
+    private void saveRecentListToPrefs() {
+        for (int i = 0; i < MAX_RECENTLIST_SIZE; i++) {
+            preferences.put(PREFS_RECENT_MAP + i, "empty");
+        }
+
+        int i = 0;
+        for (String recentMap : recentList) {
+            preferences.put(PREFS_RECENT_MAP + i, recentMap);
+            i++;
+        }
+    }
+
+    private void updateRecentMenus() {
+        recentMenu.removeAll();
+
+        for (String recentMap : recentList) {
+            recentMenu.add(new MenuItem(recentMap));
+        }
+
+        final JMenu recentMainMenu = mainMenuBar.getFileOpenRecentMenu();
+        recentMainMenu.removeAll();
+
+        for (final String recentMap : recentList) {
+            JMenuItem item = recentMainMenu.add(new JMenuItem(recentMap));
+            item.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    final Map map = new Map(recentMap);
+                    createMapWindow(map);
+                }
+            });
+        }
+    }
+
+    public boolean isMapLoaded(final String filename) {
+        for (final MapWindow window : mapWindowList) {
+            if (window.getMap().getFileName().equals(filename)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public MapWindow getFocusedWindow() {
@@ -297,20 +371,51 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         System.out.println("handleQuitRequestWith " + quitEvent.toString());
 
         // Save all to recent list
-        for (int i = 0; i < mapWindowList.size(); i++) {
-            final MapWindow window = mapWindowList.get(i);
+        for (int i = 0; i < MAX_OPENED_WINDOWS; i++) {
+            preferences.put(PREFS_LAST_OPENED_MAP + i, "empty");
+        }
+
+        int i = 0;
+        for (MapWindow window : mapWindowList) {
             final Map map = window.getMap();
             if (map.getFileName() != null) {
                 preferences.put(PREFS_LAST_OPENED_MAP + i, map.getFileName());
+                i++;
             }
         }
 
+//        for (MapWindow window : mapWindowList) {
+//            window.dispose();
+//        }
+
+        saveRecentListToPrefs();
+
+        try {
+            preferences.flush();
+        } catch (BackingStoreException e) {
+            e.printStackTrace();
+        }
+
         quitResponse.performQuit();
+//        quitResponse.cancelQuit();
+//        System.exit(0);
     }
 
-    public static class MapWindow extends JFrame {
-        private final Map map;
-        private final Brush brush;
+    public void addToRecenList(String fileName) {
+        for (String other : recentList) {
+            if (other.equals(fileName)) {
+                recentList.remove(other);
+            }
+        }
+
+        recentList.push(fileName);
+
+        updateRecentMenus();
+    }
+
+    public static class MapWindow extends JFrame implements KeyListener {
+        private Map map;
+        private Brush brush;
 
         public MapWindow(final Map map, final Brush brush) {
             super();
@@ -319,6 +424,8 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
 
             this.map = map;
             this.brush = brush;
+
+            addKeyListener(this);
         }
 
         public Map getMap() {
@@ -327,6 +434,33 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
 
         public Brush getBrush() {
             return brush;
+        }
+
+        @Override
+        public void dispose() {
+            map.deleteObservers();
+            map = null;
+
+            brush.deleteObservers();
+            brush = null;
+            super.dispose();
+        }
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()).getKeyCode() == e.getKeyCode()) {
+                System.out.println("SAVE!!!");
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+
         }
     }
 }
