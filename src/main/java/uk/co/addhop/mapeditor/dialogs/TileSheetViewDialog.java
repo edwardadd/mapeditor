@@ -5,6 +5,8 @@ import uk.co.addhop.mapeditor.models.TileSheet;
 import uk.co.addhop.mapeditor.models.TileTypeDatabase;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,7 +17,7 @@ import java.awt.event.ActionListener;
  * <p/>
  * Created by edwardaddley on 06/01/15.
  */
-public class TileSheetViewDialog extends JDialog implements ActionListener {
+public class TileSheetViewDialog extends JDialog implements ActionListener, DocumentListener {
 
     private TileTypeDatabase database;
 
@@ -27,6 +29,8 @@ public class TileSheetViewDialog extends JDialog implements ActionListener {
 
     public TileSheetViewDialog(Frame owner, String title, boolean modal, String tileSheetFilename, Map mapModel) {
         super(owner, title, modal);
+
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         database = mapModel.getDatabase();
 
@@ -63,6 +67,9 @@ public class TileSheetViewDialog extends JDialog implements ActionListener {
         widthText = new JTextField("50", 10);
         heightText = new JTextField("50", 10);
 
+        widthText.getDocument().addDocumentListener(this);
+        heightText.getDocument().addDocumentListener(this);
+
         final JPanel topPanel = new JPanel(new FlowLayout());
         topPanel.add(widthLabel);
         topPanel.add(widthText);
@@ -73,6 +80,7 @@ public class TileSheetViewDialog extends JDialog implements ActionListener {
 
         tileSheetView = new TileSheetView();
         add(tileSheetView, BorderLayout.CENTER);
+
 
         final JButton okButton = new JButton("OK");
         okButton.setActionCommand("OK");
@@ -101,35 +109,73 @@ public class TileSheetViewDialog extends JDialog implements ActionListener {
             final int imageWidth = tileSheet.getImage().getWidth(null);
             final int imageHeight = tileSheet.getImage().getHeight(null);
 
-            final int tileWidth = Integer.parseInt(widthText.getText());
-            final int tileHeight = Integer.parseInt(heightText.getText());
+            try {
+
+                final int tileWidth = Integer.parseInt(widthText.getText());
+                final int tileHeight = Integer.parseInt(heightText.getText());
 
 //            final int remainderWidth = imageWidth % tileWidth;
 //            final int remainderHeight = imageHeight % imageHeight;
 
-            int y = 0;
-            while (y < imageHeight) {
+                int y = 0;
+                while (y < imageHeight) {
 
-                int x = 0;
-                while (x < imageWidth) {
+                    int x = 0;
+                    while (x < imageWidth) {
 
-                    // Todo sort out non uniformly set width and height images
-                    tileSheet.addCell(x, y, tileWidth, tileHeight);
-                    x += tileWidth;
+                        // Todo sort out non uniformly set width and height images
+                        tileSheet.addCell(x, y, tileWidth, tileHeight);
+                        x += tileWidth;
+                    }
+                    y += tileHeight;
                 }
-                y += tileHeight;
+
+                database.addTileSheet(tileSheet.getFilename(), tileSheet);
+
+                database.saveDatabase();
+
+                dispose();
+            } catch (NumberFormatException ex) {
+                System.err.println("Width and Height must be valid numbers");
             }
-
-            database.addTileSheet(tileSheet.getFilename(), tileSheet);
-
-            database.saveDatabase();
+        } else {
+            dispose();
         }
+    }
 
-        dispose();
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        textChanged();
+    }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        textChanged();
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        textChanged();
+    }
+
+    private void textChanged() {
+        System.out.println("textChanged");
+        try {
+            final int width = Integer.parseInt(widthText.getText());
+            final int height = Integer.parseInt(heightText.getText());
+
+            if (width > 0 && height > 0) {
+                tileSheetView.setTileSize(width, height);
+            }
+        } catch (NumberFormatException ex) {
+            // Prevent action
+        }
     }
 
     public static class TileSheetView extends JPanel {
         private ImageIcon image;
+        private int tileWidth = 50;
+        private int tileHeight = 50;
 
         @Override
         public void paintComponent(Graphics g) {
@@ -141,6 +187,16 @@ public class TileSheetViewDialog extends JDialog implements ActionListener {
             if (image.getImageLoadStatus() == MediaTracker.COMPLETE) {
                 g.drawImage(image.getImage(), 0, 0, null);
             }
+
+            g.setColor(Color.RED);
+
+            for (int x = 0; x < image.getIconWidth(); x += tileWidth) {
+                g.drawLine(x, 0, x, image.getIconHeight());
+            }
+
+            for (int y = 0; y < image.getIconHeight(); y += tileHeight) {
+                g.drawLine(0, y, image.getIconWidth(), y);
+            }
         }
 
         @Override
@@ -150,6 +206,13 @@ public class TileSheetViewDialog extends JDialog implements ActionListener {
 
         public void setImage(ImageIcon image) {
             this.image = image;
+        }
+
+        public void setTileSize(int width, int height) {
+            tileWidth = width;
+            tileHeight = height;
+
+            repaint();
         }
     }
 }
