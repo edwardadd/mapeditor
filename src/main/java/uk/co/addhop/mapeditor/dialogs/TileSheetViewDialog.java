@@ -1,6 +1,5 @@
 package uk.co.addhop.mapeditor.dialogs;
 
-import uk.co.addhop.mapeditor.models.Map;
 import uk.co.addhop.mapeditor.models.TileSheet;
 import uk.co.addhop.mapeditor.models.TileTypeDatabase;
 
@@ -27,12 +26,12 @@ public class TileSheetViewDialog extends JDialog implements ActionListener, Docu
     private JTextField widthText;
     private JTextField heightText;
 
-    public TileSheetViewDialog(Frame owner, String title, boolean modal, String tileSheetFilename, Map mapModel) {
+    public TileSheetViewDialog(final Frame owner, final String title, final boolean modal, final String tileSheetFilename, final TileTypeDatabase database) {
         super(owner, title, modal);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        database = mapModel.getDatabase();
+        this.database = database;
 
         makeView();
 

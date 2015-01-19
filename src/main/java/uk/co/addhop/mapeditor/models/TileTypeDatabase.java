@@ -108,11 +108,12 @@ public class TileTypeDatabase extends Observable {
         try {
             writer = new FileWriter(MainApplication.documentPath + "/palette.json");
             final JsonWriter jsonWriter = new JsonWriter(writer);
+            jsonWriter.setIndent("\t");
 
             jsonWriter.beginArray();
             for (TileSheet sheet : tileSheetList.values()) {
                 if (!sheet.getFilename().equals("Default")) {
-                    gson.toJson(sheet, TileSheet.class, writer);
+                    gson.toJson(sheet, TileSheet.class, jsonWriter);
                 }
             }
             jsonWriter.endArray();

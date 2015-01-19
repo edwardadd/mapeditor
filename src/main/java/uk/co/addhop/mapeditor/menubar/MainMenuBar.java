@@ -44,9 +44,13 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
         menu.addSeparator();
         menu.add(createMenuItem("Save All", "SAVE_ALL", KeyEvent.VK_L, null));
 
+        final JMenu tileSheetMenu = new JMenu("Tile Library");
+        tileSheetMenu.add(createMenuItem("Add...", "ADD_TILE_SHEET", KeyEvent.VK_T, KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
+
         windowMenu = new JMenu("Window");
         menuBar = new JMenuBar();
         menuBar.add(menu);
+        menuBar.add(tileSheetMenu);
         menuBar.add(windowMenu);
     }
 
@@ -73,6 +77,8 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
             controller.saveMapAs();
         } else if (e.getActionCommand().equals("CLOSE")) {
             controller.closeMap();
+        } else if (e.getActionCommand().equals("ADD_TILE_SHEET")) {
+            controller.addTileSheet();
         }
     }
 

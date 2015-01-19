@@ -18,7 +18,10 @@ import uk.co.addhop.mapeditor.toolbar.ToolbarView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -42,9 +45,9 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
     private java.util.List<MapWindow> mapWindowList = new ArrayList<MapWindow>();
     private MapWindow focused;
     private PopupMenu recentMenu;
-    private MainMenuBarController mainMenuBarController;
 
     private Deque<String> recentList = new ArrayDeque<String>();
+    private TileTypeDatabase database;
 
     public void init() {
 
@@ -76,7 +79,7 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
 
         updateRecentListFromPrefs();
 
-        mainMenuBarController = new MainMenuBarController();
+        final MainMenuBarController mainMenuBarController = new MainMenuBarController();
         mainMenuBarController.setModel(this);
 
         mainMenuBar = new MainMenuBar();
@@ -413,7 +416,11 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         updateRecentMenus();
     }
 
-    public static class MapWindow extends JFrame implements KeyListener {
+    public TileTypeDatabase getDatabase() {
+        return database;
+    }
+
+    public static class MapWindow extends JFrame {
         private Map map;
         private Brush brush;
 
@@ -424,8 +431,6 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
 
             this.map = map;
             this.brush = brush;
-
-            addKeyListener(this);
         }
 
         public Map getMap() {
@@ -444,23 +449,6 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
             brush.deleteObservers();
             brush = null;
             super.dispose();
-        }
-
-        @Override
-        public void keyTyped(KeyEvent e) {
-
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()).getKeyCode() == e.getKeyCode()) {
-                System.out.println("SAVE!!!");
-            }
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-
         }
     }
 }

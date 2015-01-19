@@ -2,6 +2,7 @@ package uk.co.addhop.mapeditor.menubar;
 
 import uk.co.addhop.mapeditor.MainApplication;
 import uk.co.addhop.mapeditor.dialogs.NewMapDialogViewController;
+import uk.co.addhop.mapeditor.dialogs.TileSheetViewDialog;
 import uk.co.addhop.mapeditor.interfaces.Controller;
 import uk.co.addhop.mapeditor.models.Map;
 
@@ -108,6 +109,28 @@ public class MainMenuBarController implements Controller<MainApplication> {
                 // Add to most recent file list
                 model.addToRecenList(window.getMap().getFileName());
             }
+        }
+    }
+
+    public void addTileSheet() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        // Note: source for ExampleFileFilter can be found in FileChooserDemo,
+        // under the demo/jfc directory in the Java 2 SDK, Standard Edition.
+        //ExampleFileFilter filter = new ExampleFileFilter();
+        //filter.addExtension("jpg");
+        //filter.addExtension("gif");
+        //filter.setDescription("JPG & GIF Images");
+        //chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            //System.out.println("You chose to open this file: " +
+            final String filePath = chooser.getSelectedFile().getAbsolutePath();
+
+            // Display modal dialog for cutting up the
+            final TileSheetViewDialog dialog = new TileSheetViewDialog(null, "Tile Sheet View Dialog", true, filePath, model.getDatabase());
+            dialog.setVisible(true);
         }
     }
 }
