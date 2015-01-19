@@ -111,6 +111,7 @@ public class Map extends Observable {
             final Gson gson = new GsonBuilder().create();
             final JsonWriter jsonWriter = new JsonWriter(writer);
             jsonWriter.setLenient(true);
+            jsonWriter.setIndent("\t");
 
             jsonWriter.beginObject();
 
@@ -216,5 +217,10 @@ public class Map extends Observable {
         }
 
         return null;
+    }
+
+    public void tileChanged() {
+        setChanged();
+        notifyObservers(this);
     }
 }

@@ -44,14 +44,16 @@ public class MapView extends JPanel implements View<MapView, MapViewController> 
             int y = tileHeight * tile.getYPosition();
 
             final TileSheet tileSheet = database.getTileSheet(tile.getTileSheet());
-            final TileSheet.Cell cell = tileSheet.getCellList().get(tile.getTileSetIndex());
+            if (tileSheet != null) {
+                final TileSheet.Cell cell = tileSheet.getCellList().get(tile.getTileSetIndex());
 
-            int dx = (int) cell.getFrame().getX();
-            int dy = (int) cell.getFrame().getY();
-            int dx2 = (int) (cell.getFrame().getX() + cell.getFrame().getWidth());
-            int dy2 = (int) (cell.getFrame().getY() + cell.getFrame().getHeight());
+                int dx = (int) cell.getFrame().getX();
+                int dy = (int) cell.getFrame().getY();
+                int dx2 = (int) (cell.getFrame().getX() + cell.getFrame().getWidth());
+                int dy2 = (int) (cell.getFrame().getY() + cell.getFrame().getHeight());
 
-            g.drawImage(tileSheet.getImage(), x, y, x + tileWidth, y + tileHeight, dx, dy, dx2, dy2, null);
+                g.drawImage(tileSheet.getImage(), x, y, x + tileWidth, y + tileHeight, dx, dy, dx2, dy2, null);
+            }
         }
     }
 

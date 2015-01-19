@@ -1,7 +1,9 @@
 package uk.co.addhop.mapeditor.map;
 
+import uk.co.addhop.mapeditor.command.TileCommand;
 import uk.co.addhop.mapeditor.interfaces.Controller;
 import uk.co.addhop.mapeditor.models.Brush;
+import uk.co.addhop.mapeditor.models.EventList;
 import uk.co.addhop.mapeditor.models.Map;
 import uk.co.addhop.mapeditor.models.Tile;
 
@@ -23,8 +25,14 @@ public class MapViewController implements Controller<Map> {
         if (tile != null) {
             brush.setSelectedTile(tile);
 
-            tile.setTileSheet(brush.getTileSheetName());
-            tile.setTileSetIndex(brush.getTileSheetCellIndex());
+            switch (brush.getBrushType()) {
+                case PAINT:
+                    final TileCommand paint = new TileCommand(model, tile, brush.getTileSheetName(), brush.getTileSheetCellIndex());
+                    paint.execute();
+
+                    EventList.getInstance().push(paint);
+                    break;
+            }
         }
     }
 

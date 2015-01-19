@@ -54,17 +54,41 @@ public class Tile {
         return yPosition;
     }
 
-    public Tile copy() {
-        Tile ret = new Tile(0, 0);
-        ret.xPosition = xPosition;
-        ret.yPosition = yPosition;
+    public Tile createCopy() {
+        final Tile ret = new Tile(xPosition, yPosition);
+        ret.setTileSheet(tileSheet);
+        ret.setTileSetIndex(index);
         return ret;
     }
 
-    public Tile copy(final Tile copyTo) {
-        copyTo.xPosition = xPosition;
-        copyTo.yPosition = yPosition;
-        copyTo.setTileSetIndex(getTileSetIndex());
-        return copyTo;
+    public void copy(final Tile copy) {
+        xPosition = copy.xPosition;
+        yPosition = copy.yPosition;
+        tileSheet = copy.tileSheet;
+        index = copy.index;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Tile tile = (Tile) o;
+
+        if (index != tile.index) return false;
+        if (xPosition != tile.xPosition) return false;
+        if (yPosition != tile.yPosition) return false;
+        if (tileSheet != null ? !tileSheet.equals(tile.tileSheet) : tile.tileSheet != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = tileSheet != null ? tileSheet.hashCode() : 0;
+        result = 31 * result + index;
+        result = 31 * result + xPosition;
+        result = 31 * result + yPosition;
+        return result;
     }
 }
