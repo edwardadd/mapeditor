@@ -5,25 +5,45 @@
 
 package uk.co.addhop.mapeditor.command;
 
+import uk.co.addhop.mapeditor.models.Map;
 import uk.co.addhop.mapeditor.models.Tile;
 
 /**
  * @author mr edward addley
  */
-public class TileCommand extends Command {
+public class TileCommand implements Command {
 
-    private Tile original;
-    private Tile newTile;
+    private Map map;
+
+    private Tile originalTile;
+    private Tile tile;
 
     private String tileSheetName;
     private int tileSheetIndex;
 
-    @Override
-    public void undo() {
+    public TileCommand(Map model, final Tile tile, final String tileSheetName, final int tileSheetIndex) {
+        this.tile = tile;
+        this.tileSheetName = tileSheetName;
+        this.tileSheetIndex = tileSheetIndex;
+        map = model;
 
+        originalTile = tile.createCopy();
     }
 
     @Override
-    public void redo() {
+    public boolean execute() {
+        tile.setTileSheet(tileSheetName);
+        tile.setTileSetIndex(tileSheetIndex);
+
+        map.tileChanged();
+        return true;
+    }
+
+    @Override
+    public boolean undo() {
+        tile.copy(originalTile);
+
+        map.tileChanged();
+        return true;
     }
 }

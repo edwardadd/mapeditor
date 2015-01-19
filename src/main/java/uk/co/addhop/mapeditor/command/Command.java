@@ -8,10 +8,8 @@ package uk.co.addhop.mapeditor.command;
 /**
  * @author mr edward addley
  */
-public abstract class Command {
-    public String name;
+public interface Command {
+    public boolean execute();
 
-    public abstract void undo();
-
-    public abstract void redo();
+    public boolean undo();
 }

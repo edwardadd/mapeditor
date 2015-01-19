@@ -8,20 +8,45 @@ import java.util.Stack;
  * @stereotype control
  */
 public class EventList {
-    private Stack<Command> undoList;
-    private Stack<Command> redoList;
+    private Stack<Command> undoList = new Stack<Command>();
+    private Stack<Command> redoList = new Stack<Command>();
 
-    public void undo() {
-        // message #1.1.1 to undoList:java.util.Stack
-        if (undoList.peek() != null) {
-            // message #1.1.2 to undoList:java.util.Stack
-            // ActionEvent temp = undoList.pop();
-            // message #1.1.3 to redoList:java.util.Stack
-            //temp = redoList.push(temp);
+    private static EventList instance;
+
+    public static EventList getInstance() {
+        if (instance == null) {
+            instance = new EventList();
         }
+        return instance;
     }
 
-    public void addEvent(Command command) {
+    public void push(Command command) {
         undoList.push(command);
+        redoList.clear();
+    }
+
+    public Command undo() {
+
+        if (!undoList.isEmpty()) {
+            final Command command = undoList.pop();
+            command.undo();
+            redoList.push(command);
+
+            return command;
+        }
+
+        return null;
+    }
+
+    public Command redo() {
+
+        if (!redoList.isEmpty()) {
+            final Command command = redoList.pop();
+            command.execute();
+            undoList.push(command);
+            return command;
+        }
+
+        return null;
     }
 }
