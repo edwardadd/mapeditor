@@ -44,11 +44,11 @@ public class MapView extends JPanel implements View<MapView, MapViewController> 
 
         final int startX = g.getClipBounds().x / tileWidth;
         final int startY = g.getClipBounds().y / tileHeight;
-        final int endX = 1 + (g.getClipBounds().x + g.getClipBounds().width) / tileWidth;
-        final int endY = 1 + (g.getClipBounds().y + g.getClipBounds().height) / tileHeight;
+        final int endX = Math.min(1 + (g.getClipBounds().x + g.getClipBounds().width) / tileWidth, mapWidth);
+        final int endY = Math.min(1 + (g.getClipBounds().y + g.getClipBounds().height) / tileHeight, mapHeight);
 
-        for (int y = startY; y < endY && y < mapHeight; y++) {
-            for (int x = startX; x < endX && x < mapWidth; x++) {
+        for (int y = startY; y < endY; y++) {
+            for (int x = startX; x < endX; x++) {
                 final int index = x + y * mapWidth;
 
                 final Tile tile = tileList.get(index);
