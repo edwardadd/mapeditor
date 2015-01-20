@@ -30,6 +30,8 @@ public class FillCommand implements Command {
 
     private void fill(int x, int y, String originalTileSheet, int originalTileSheetCellIndex, String tileSheetName, int tileSheetCellIndex, int mapWidth, int mapHeight) {
 
+        int start = 0, x1, x2, dy;
+
         Segment[] stack = new Segment[MAX_STACK];
         for (int i = 0; i < MAX_STACK; i++) {
             stack[i] = new Segment(0, 0, 0, 0);
@@ -53,8 +55,6 @@ public class FillCommand implements Command {
 
         while (stackIndex > 0) {
 
-            int l = 0, x1, x2, dy;
-
             // Pop
             stackIndex--;
             y = stack[stackIndex].y + stack[stackIndex].dy;
@@ -62,11 +62,12 @@ public class FillCommand implements Command {
             x1 = stack[stackIndex].xl;
             x2 = stack[stackIndex].xr;
 
-            for (x = x1; x >= 0; x--) {
+            for (x = x1; x >= 0; ) {
                 final Tile tile = model.getTile(x, y);
                 if (tile.getTileSheet().equals(originalTileSheet) && tile.getTileSetIndex() == originalTileSheetCellIndex) {
                     tile.setTileSheet(tileSheetName);
                     tile.setTileSetIndex(tileSheetCellIndex);
+                    x--;
                 } else {
                     break;
                 }
@@ -79,12 +80,12 @@ public class FillCommand implements Command {
             }
 
             if (!skip) {
-                l = x + 1;
+                start = x + 1;
 
-                if (l < x1) {
+                if (start < x1) {
                     // Push
                     if (y + -dy >= 0 && y + -dy < mapHeight) {
-                        stack[stackIndex++].set(y, l, x1 - 1, -dy);
+                        stack[stackIndex++].set(y, start, x1 - 1, -dy);
                     }
                 }
 
@@ -93,11 +94,12 @@ public class FillCommand implements Command {
 
             do {
                 if (!skip) {
-                    for (; x < mapWidth; x++) {
+                    for (; x < mapWidth; ) {
                         final Tile tile = model.getTile(x, y);
                         if (tile.getTileSheet().equals(originalTileSheet) && tile.getTileSetIndex() == originalTileSheetCellIndex) {
                             tile.setTileSheet(tileSheetName);
                             tile.setTileSetIndex(tileSheetCellIndex);
+                            x++;
                         } else {
                             break;
                         }
@@ -105,7 +107,7 @@ public class FillCommand implements Command {
 
                     // Push
                     if (y + dy >= 0 && y + dy < mapHeight) {
-                        stack[stackIndex++].set(y, l, x - 1, dy);
+                        stack[stackIndex++].set(y, start, x - 1, dy);
                     }
 
                     if (x > x2 + 1) {
@@ -118,14 +120,16 @@ public class FillCommand implements Command {
 
                 skip = false;
 
-                for (x++; x <= x2; x++) {
+                for (x++; x <= x2; ) {
                     final Tile tile = model.getTile(x, y);
                     if (!(tile.getTileSheet().equals(originalTileSheet) && tile.getTileSetIndex() == originalTileSheetCellIndex)) {
+                        x++;
+                    } else {
                         break;
                     }
                 }
 
-                l = x;
+                start = x;
             } while (x <= x2);
         }
     }
