@@ -42,20 +42,28 @@ public class MapView extends JPanel implements View<MapView, MapViewController> 
 //        g.setColor(Color.RED);
 //        g.fillRect(getX(), getY(), getWidth(), getHeight());
 
-        for (Tile tile : tileList) {
-            int x = tileWidth * tile.getXPosition();
-            int y = tileHeight * tile.getYPosition();
+        final int startX = g.getClipBounds().x / tileWidth;
+        final int startY = g.getClipBounds().y / tileHeight;
+        final int endX = 1 + (g.getClipBounds().x + g.getClipBounds().width) / tileWidth;
+        final int endY = 1 + (g.getClipBounds().y + g.getClipBounds().height) / tileHeight;
 
-            final TileSheet tileSheet = database.getTileSheet(tile.getTileSheet());
-            if (tileSheet != null) {
-                final TileSheet.Cell cell = tileSheet.getCellList().get(tile.getTileSetIndex());
+        for (int y = startY; y < endY && y < mapHeight; y++) {
+            for (int x = startX; x < endX && x < mapWidth; x++) {
+                final int index = x + y * mapWidth;
 
-                int dx = (int) cell.getFrame().getX();
-                int dy = (int) cell.getFrame().getY();
-                int dx2 = (int) (cell.getFrame().getX() + cell.getFrame().getWidth());
-                int dy2 = (int) (cell.getFrame().getY() + cell.getFrame().getHeight());
+                final Tile tile = tileList.get(index);
+                final TileSheet tileSheet = database.getTileSheet(tile.getTileSheet());
 
-                g.drawImage(tileSheet.getImage(), x, y, x + tileWidth, y + tileHeight, dx, dy, dx2, dy2, null);
+                if (tileSheet != null) {
+                    final TileSheet.Cell cell = tileSheet.getCellList().get(tile.getTileSetIndex());
+
+                    int dx = (int) cell.getFrame().getX();
+                    int dy = (int) cell.getFrame().getY();
+                    int dx2 = (int) (cell.getFrame().getX() + cell.getFrame().getWidth());
+                    int dy2 = (int) (cell.getFrame().getY() + cell.getFrame().getHeight());
+
+                    g.drawImage(tileSheet.getImage(), x * tileWidth, y * tileHeight, x * tileWidth + tileWidth, y * tileHeight + tileHeight, dx, dy, dx2, dy2, null);
+                }
             }
         }
     }
