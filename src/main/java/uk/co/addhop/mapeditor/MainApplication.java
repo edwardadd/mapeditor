@@ -47,7 +47,6 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
     private PopupMenu recentMenu;
 
     private Deque<String> recentList = new ArrayDeque<String>();
-    private TileTypeDatabase database;
 
     public void init() {
 
@@ -153,15 +152,18 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         tileTypeDatabase.addObserver(paletteView);
 
         // Set up toolbar
-        final ToolbarModel toolbarModel = new ToolbarModel();
+        final ToolbarModel toolbarModel = new ToolbarModel(brush);
         final ToolbarView toolbarView = new ToolbarView();
-        final ToolbarController toolbarController = new ToolbarController(toolbarModel, mapModel);
+        final ToolbarController toolbarController = new ToolbarController();
 
         toolbarModel.addObserver(toolbarView);
         toolbarView.makeToolbar(toolbarController);
+        toolbarController.setModel(toolbarModel);
 
+        // Create window
         final MapWindow appWindow = new MapWindow(mapModel, brush);
 
+        // Set up menu bar
         final MainMenuBar menuBar = new MainMenuBar();
         final MainMenuBarController menuBarController = new MainMenuBarController();
         menuBarController.setModel(MainApplication.this);
@@ -417,7 +419,7 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
     }
 
     public TileTypeDatabase getDatabase() {
-        return database;
+        return tileTypeDatabase;
     }
 
     public static class MapWindow extends JFrame {

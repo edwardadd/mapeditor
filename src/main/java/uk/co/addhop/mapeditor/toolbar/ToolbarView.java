@@ -16,6 +16,9 @@ import java.util.Observable;
 public class ToolbarView extends JToolBar implements View<JToolBar, ToolbarController>, ActionListener {
 
     private ToolbarController controller;
+    private JButton paintButton;
+    private JButton fillButton;
+    private JButton magicButton;
 
     public ToolbarView() {
         super();
@@ -31,10 +34,9 @@ public class ToolbarView extends JToolBar implements View<JToolBar, ToolbarContr
         makeButton("Select", controller, "SELECT");
         makeButton("Deselect", controller, "DESELECT");
         addSeparator();
-        makeButton("Paint", controller, "PAINT");
-        makeButton("Select", controller, "SELECT");
-        makeButton("Fill", controller, "FILL");
-        makeButton("Magic ", controller, "MAGIC");
+        paintButton = makeButton("Paint", controller, "PAINT");
+        fillButton = makeButton("Fill", controller, "FILL");
+        magicButton = makeButton("Magic ", controller, "MAGIC");
     }
 
     private JButton makeButton(final String label, final ToolbarController controller, final String actionCommand) {
@@ -61,6 +63,9 @@ public class ToolbarView extends JToolBar implements View<JToolBar, ToolbarContr
         } else if (e.getActionCommand().equals("REDO")) {
             // Call into the undo system
             controller.redo();
+        } else if (e.getActionCommand().equals("PAINT")) {
+            // Set brush to fill
+            controller.paint();
         } else if (e.getActionCommand().equals("FILL")) {
             // Set brush to fill
             controller.fill();

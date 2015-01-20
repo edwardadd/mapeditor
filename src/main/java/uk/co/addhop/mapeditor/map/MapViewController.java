@@ -1,5 +1,6 @@
 package uk.co.addhop.mapeditor.map;
 
+import uk.co.addhop.mapeditor.command.FillCommand;
 import uk.co.addhop.mapeditor.command.TileCommand;
 import uk.co.addhop.mapeditor.interfaces.Controller;
 import uk.co.addhop.mapeditor.models.Brush;
@@ -31,6 +32,13 @@ public class MapViewController implements Controller<Map> {
                     paint.execute();
 
                     EventList.getInstance().push(paint);
+                    break;
+
+                case FILL:
+                    final FillCommand fill = new FillCommand(model, tile, brush.getTileSheetName(), brush.getTileSheetCellIndex());
+                    fill.execute();
+
+                    EventList.getInstance().push(fill);
                     break;
             }
         }

@@ -209,7 +209,11 @@ public class Map extends Observable {
 //        notifyObservers(this);
     }
 
-    public Tile getTile(int x, int y) {
+    public Tile getTile(final int x, final int y) {
+        if (x < 0 || y < 0 || x >= mapWidth || y >= mapHeight) {
+            System.err.println("getTile params out of bounds - " + x + ", " + y);
+        }
+
         final int index = x + y * mapWidth;
 
         if (index < mapTiles.size()) {

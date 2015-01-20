@@ -29,6 +29,9 @@ public class MapView extends JPanel implements View<MapView, MapViewController> 
     private int tileWidth;
     private int tileHeight;
 
+    private int mapWidth;
+    private int mapHeight;
+
     public MapView() {
         tileList = new ArrayList<Tile>();
     }
@@ -64,8 +67,10 @@ public class MapView extends JPanel implements View<MapView, MapViewController> 
             tileList = map.getMapTiles();
             tileWidth = map.getTileWidth();
             tileHeight = map.getTileHeight();
+            mapWidth = map.getMapWidth();
+            mapHeight = map.getMapHeight();
 
-            setPreferredSize(new Dimension(tileWidth * map.getMapWidth(), tileHeight * map.getMapHeight()));
+            setPreferredSize(new Dimension(tileWidth * mapWidth, tileHeight * mapHeight));
 
             if (getMouseListeners().length == 0) {
                 addMouseListener(mouseListener);
@@ -87,9 +92,10 @@ public class MapView extends JPanel implements View<MapView, MapViewController> 
             final int x = Math.floorDiv(e.getX(), tileWidth);
             final int y = Math.floorDiv(e.getY(), tileHeight);
 
-            controller.selectedTile(x, y);
-
-            repaint();
+            if (x >= 0 && y >= 0 && x < mapWidth && y < mapHeight) {
+                controller.selectedTile(x, y);
+                repaint();
+            }
 
         }
 
