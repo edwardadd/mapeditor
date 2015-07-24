@@ -8,6 +8,7 @@ import uk.co.addhop.mapeditor.MainApplication;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -64,7 +65,7 @@ public class TileTypeDatabase extends Observable {
 
         final FileReader reader;
         try {
-            reader = new FileReader(MainApplication.documentPath + "/palette.json");
+            reader = new FileReader(MainApplication.getDocumentPath() + "/palette.json");
 
 //            final String json = readWholeFile(reader);
             final JsonParser parser = new JsonParser();
@@ -82,6 +83,8 @@ public class TileTypeDatabase extends Observable {
             reader.close();
 
 
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -106,7 +109,7 @@ public class TileTypeDatabase extends Observable {
 
         final FileWriter writer;
         try {
-            writer = new FileWriter(MainApplication.documentPath + "/palette.json");
+            writer = new FileWriter(MainApplication.getDocumentPath() + "/palette.json");
             final JsonWriter jsonWriter = new JsonWriter(writer);
             jsonWriter.setIndent("\t");
 

@@ -43,62 +43,61 @@ public class Map extends Observable {
 
         this.fileName = fileName;
 
-        loadTileSet(fileName);
+        try {
+            loadTileSet(fileName);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void initialize() {
 
         // Load previous map or start empty
 
-        notifyChanges();
+        setChanged();
     }
 
-    public void loadTileSet(final String filename) {
+    public void loadTileSet(final String filename) throws IOException {
 
         final Reader reader;
+        reader = new FileReader(filename);
+        final JsonReader jsonReader = new JsonReader(reader);
+        jsonReader.setLenient(true);
 
-        try {
-            reader = new FileReader(filename);
-            final JsonReader jsonReader = new JsonReader(reader);
-            jsonReader.setLenient(true);
+        final Gson gson = new GsonBuilder().create();
 
-            final Gson gson = new GsonBuilder().create();
+        jsonReader.beginObject();
+        jsonReader.nextName();
+        mapName = jsonReader.nextString();
+        jsonReader.nextName();
+        mapWidth = jsonReader.nextInt();
+        jsonReader.nextName();
+        mapHeight = jsonReader.nextInt();
+        jsonReader.nextName();
+        tileWidth = jsonReader.nextInt();
+        jsonReader.nextName();
+        tileHeight = jsonReader.nextInt();
+        jsonReader.nextName();
 
-            jsonReader.beginObject();
-            jsonReader.nextName();
-            mapName = jsonReader.nextString();
-            jsonReader.nextName();
-            mapWidth = jsonReader.nextInt();
-            jsonReader.nextName();
-            mapHeight = jsonReader.nextInt();
-            jsonReader.nextName();
-            tileWidth = jsonReader.nextInt();
-            jsonReader.nextName();
-            tileHeight = jsonReader.nextInt();
-            jsonReader.nextName();
-
-            if (mapTiles == null) {
-                mapTiles = new ArrayList<Tile>(mapWidth * mapHeight);
-            }
-
-            mapTiles.clear();
-
-            jsonReader.beginArray();
-
-            for (int i = 0; i < mapWidth * mapHeight; i++) {
-                final Tile tile = gson.fromJson(jsonReader, Tile.class);
-                mapTiles.add(tile);
-            }
-
-            jsonReader.endArray();
-            jsonReader.endObject();
-
-            jsonReader.close();
-
-            notifyChanges();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        if (mapTiles == null) {
+            mapTiles = new ArrayList<Tile>(mapWidth * mapHeight);
         }
+
+        mapTiles.clear();
+
+        jsonReader.beginArray();
+
+        for (int i = 0; i < mapWidth * mapHeight; i++) {
+            final Tile tile = gson.fromJson(jsonReader, Tile.class);
+            mapTiles.add(tile);
+        }
+
+        jsonReader.endArray();
+        jsonReader.endObject();
+
+        jsonReader.close();
+
+        setChanged();
     }
 
     public void saveTileSet(final String filename) {
@@ -163,7 +162,7 @@ public class Map extends Observable {
             }
         }
 
-        notifyChanges();
+        setChanged();
     }
 
     public int getMapWidth() {
@@ -202,13 +201,6 @@ public class Map extends Observable {
         this.database = database;
     }
 
-    private void notifyChanges() {
-
-        setChanged();
-
-//        notifyObservers(this);
-    }
-
     public Tile getTile(final int x, final int y) {
         if (x < 0 || y < 0 || x >= mapWidth || y >= mapHeight) {
             System.err.println("getTile params out of bounds - " + x + ", " + y);
@@ -226,5 +218,18 @@ public class Map extends Observable {
     public void tileChanged() {
         setChanged();
         notifyObservers(this);
+    }
+
+    public static Map LoadMap(final String name) {
+        Map map = new Map();
+
+        try {
+            map.loadTileSet(name);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return map;
     }
 }

@@ -1,6 +1,7 @@
 package uk.co.addhop.mapeditor.menubar;
 
 import uk.co.addhop.mapeditor.MainApplication;
+import uk.co.addhop.mapeditor.MapWindow;
 import uk.co.addhop.mapeditor.dialogs.NewMapDialogViewController;
 import uk.co.addhop.mapeditor.dialogs.TileSheetViewDialog;
 import uk.co.addhop.mapeditor.interfaces.Controller;
@@ -15,14 +16,14 @@ import javax.swing.*;
  */
 public class MainMenuBarController implements Controller<MainApplication> {
     private MainApplication model;
-    private MainApplication.MapWindow parent;
+    private MapWindow parent;
 
     @Override
     public void setModel(final MainApplication model) {
         this.model = model;
     }
 
-    public void setParent(final MainApplication.MapWindow mapWindow) {
+    public void setParent(final MapWindow mapWindow) {
         parent = mapWindow;
     }
 
@@ -36,7 +37,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
     public void saveMap() {
         // Get currently focused window and tell it to save map
 
-        final MainApplication.MapWindow window;
+        final MapWindow window;
 
         if (parent != null) {
             window = parent;
@@ -49,7 +50,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
             if (map.getFileName() != null) {
                 map.saveTileSet(map.getFileName());
 
-                model.addToRecenList(map.getFileName());
+                model.addToRecentList(map.getFileName());
             } else {
                 saveMapAs();
             }
@@ -67,6 +68,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
             //System.out.println("You chose to open this file: " +
             final String filePath = chooser.getSelectedFile().getAbsolutePath();
 
+            model.addToRecentList(filePath);
             model.createMapWindow(new Map(filePath));
         }
 
@@ -76,7 +78,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
         // Get currently focused window
         // Close the window
 
-        final MainApplication.MapWindow window;
+        final MapWindow window;
 
         if (parent != null) {
             window = parent;
@@ -88,7 +90,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
     }
 
     public void saveMapAs() {
-        final MainApplication.MapWindow window;
+        final MapWindow window;
 
         if (parent != null) {
             window = parent;
@@ -107,7 +109,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
                 window.getMap().saveTileSet(filePath);
 
                 // Add to most recent file list
-                model.addToRecenList(window.getMap().getFileName());
+                model.addToRecentList(window.getMap().getFileName());
             }
         }
     }

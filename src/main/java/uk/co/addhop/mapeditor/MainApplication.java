@@ -38,7 +38,6 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
     public static final int MAX_RECENTLIST_SIZE = 5;
 
     private Preferences preferences;
-    public static String documentPath;
     private TileTypeDatabase tileTypeDatabase;
 
     private MainMenuBar mainMenuBar;
@@ -62,16 +61,12 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "MapEditor v0.1");
 
-        // take the menu bar off the jframe
-        System.setProperty("apple.laf.useScreenMenuBar", "true");
+        setSystemProperties();
 
-        documentPath = System.getProperty("user.home") + "/Library/" + "MapEditor";
-
-        final boolean success = (new File(documentPath)).mkdirs();
+        final boolean success = (new File(getDocumentPath())).mkdirs();
         if (!success) {
-            System.out.println("Document directory failed to create: " + documentPath);
+            System.out.println("Document directory failed to create: " + getDocumentPath());
         }
 
         preferences = Preferences.userNodeForPackage(this.getClass());
@@ -109,6 +104,17 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         }
     }
 
+    public void setSystemProperties() {
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "MapEditor v0.1");
+
+        // take the menu bar off the jframe
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+    }
+
+    public static String getDocumentPath() {
+        return System.getProperty("user.home") + "/Library/" + "MapEditor";
+    }
+
     private void loadPreviouslyOpenedMaps() {
         // Load any previously open map windows
         for (int i = 0; i < MAX_OPENED_WINDOWS; i++) {
@@ -121,10 +127,6 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
     }
 
     public JFrame createMapWindow(final Map mapModel) {
-
-        if (mapModel.getFileName() != null) {
-            addToRecenList(mapModel.getFileName());
-        }
 
         final Brush brush = new Brush();
 
@@ -334,15 +336,22 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
     private void updateRecentMenus() {
         recentMenu.removeAll();
 
-        for (String recentMap : recentList) {
-            recentMenu.add(new MenuItem(recentMap));
+        for (final String recentMap : recentList) {
+            final MenuItem item = recentMenu.add(new MenuItem(recentMap));
+            item.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    final Map map = new Map(recentMap);
+                    createMapWindow(map);
+                }
+            });
         }
 
         final JMenu recentMainMenu = mainMenuBar.getFileOpenRecentMenu();
         recentMainMenu.removeAll();
 
         for (final String recentMap : recentList) {
-            JMenuItem item = recentMainMenu.add(new JMenuItem(recentMap));
+            final JMenuItem item = recentMainMenu.add(new JMenuItem(recentMap));
             item.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -406,7 +415,7 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
 //        System.exit(0);
     }
 
-    public void addToRecenList(String fileName) {
+    public void addToRecentList(String fileName) {
         for (String other : recentList) {
             if (other.equals(fileName)) {
                 recentList.remove(other);
@@ -422,35 +431,4 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         return tileTypeDatabase;
     }
 
-    public static class MapWindow extends JFrame {
-        private Map map;
-        private Brush brush;
-
-        public MapWindow(final Map map, final Brush brush) {
-            super();
-
-            setTitle(map.getMapName() + " - " + map.getFileName());
-
-            this.map = map;
-            this.brush = brush;
-        }
-
-        public Map getMap() {
-            return map;
-        }
-
-        public Brush getBrush() {
-            return brush;
-        }
-
-        @Override
-        public void dispose() {
-            map.deleteObservers();
-            map = null;
-
-            brush.deleteObservers();
-            brush = null;
-            super.dispose();
-        }
-    }
 }

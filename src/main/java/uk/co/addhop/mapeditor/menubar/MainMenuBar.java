@@ -21,8 +21,8 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
     private boolean appMenuBar;
     private JMenuBar menuBar;
     private MainMenuBarController controller;
-    private final JMenu fileOpenRecentMenu;
-    private final JMenu windowMenu;
+    private static JMenu fileOpenRecentMenu;
+    private static JMenu windowMenu;
 
     public MainMenuBar() {
         this(false);
@@ -31,8 +31,10 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
     public MainMenuBar(final boolean appMenuBar) {
         this.appMenuBar = appMenuBar;
 
-        fileOpenRecentMenu = new JMenu("Open Recent");
-        fileOpenRecentMenu.setMnemonic(KeyEvent.VK_R);
+        if (fileOpenRecentMenu == null) {
+            fileOpenRecentMenu = new JMenu("Open Recent");
+            fileOpenRecentMenu.setMnemonic(KeyEvent.VK_R);
+        }
 
         final JMenu menu = new JMenu("File");
         menu.add(createMenuItem("New...", "NEW", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
@@ -47,7 +49,9 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
         final JMenu tileSheetMenu = new JMenu("Tile Library");
         tileSheetMenu.add(createMenuItem("Add...", "ADD_TILE_SHEET", KeyEvent.VK_T, KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
 
-        windowMenu = new JMenu("Window");
+        if (windowMenu == null) {
+            windowMenu = new JMenu("Window");
+        }
         menuBar = new JMenuBar();
         menuBar.add(menu);
         menuBar.add(tileSheetMenu);
@@ -102,11 +106,11 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
 
     }
 
-    public JMenu getFileOpenRecentMenu() {
+    public static JMenu getFileOpenRecentMenu() {
         return fileOpenRecentMenu;
     }
 
-    public JMenu getWindowMenu() {
+    public static JMenu getWindowMenu() {
         return windowMenu;
     }
 
