@@ -36,6 +36,16 @@ public class Map extends Observable {
         tileHeight = 50;
 
         mapTiles = new ArrayList<Tile>(mapWidth * mapHeight);
+
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapWidth; x++) {
+                final Tile tile = new Tile(x, y);
+                tile.setTileSetIndex(0);
+                tile.setTileSheet("Default");
+
+                mapTiles.add(tile);
+            }
+        }
     }
 
     public Map(final String fileName) {

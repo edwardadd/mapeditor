@@ -1,6 +1,7 @@
 package uk.co.addhop.mapeditor.map;
 
 import uk.co.addhop.mapeditor.interfaces.Controller;
+import uk.co.addhop.mapeditor.interfaces.MapViewInterface;
 import uk.co.addhop.mapeditor.interfaces.View;
 import uk.co.addhop.mapeditor.models.Map;
 import uk.co.addhop.mapeditor.models.Tile;
@@ -20,8 +21,8 @@ import java.util.Observable;
  * @author (your name)
  * @version (a version number or a date)
  */
-public class MapView extends JPanel implements View<MapView, MapViewController> {
-    private MapViewController controller;
+public class MapView extends JPanel implements View<MapView, MapViewInterface> {
+    private MapViewInterface controller;
 
     private java.util.List<Tile> tileList;
 
@@ -129,7 +130,7 @@ public class MapView extends JPanel implements View<MapView, MapViewController> 
     }
 
     @Override
-    public void setController(MapViewController controller) {
+    public void setController(MapViewInterface controller) {
         this.controller = controller;
     }
 

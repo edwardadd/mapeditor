@@ -2,6 +2,7 @@ package uk.co.addhop.mapeditor.menubar;
 
 import uk.co.addhop.mapeditor.MainApplication;
 import uk.co.addhop.mapeditor.MapWindow;
+import uk.co.addhop.mapeditor.dialogs.GenerateCaveViewDialog;
 import uk.co.addhop.mapeditor.dialogs.NewMapDialogViewController;
 import uk.co.addhop.mapeditor.dialogs.TileSheetViewDialog;
 import uk.co.addhop.mapeditor.interfaces.Controller;
@@ -32,6 +33,11 @@ public class MainMenuBarController implements Controller<MainApplication> {
 
         final NewMapDialogViewController dialogViewController = new NewMapDialogViewController(null, model, true);
         dialogViewController.setVisible(true);
+    }
+
+    public void newCaveMap() {
+        final GenerateCaveViewDialog dialog = new GenerateCaveViewDialog(null, "Cave", true, model.getDatabase());
+        dialog.setVisible(true);
     }
 
     public void saveMap() {
