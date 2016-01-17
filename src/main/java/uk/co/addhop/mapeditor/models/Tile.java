@@ -64,7 +64,7 @@ public class Tile {
     public void copy(final Tile copy) {
         xPosition = copy.xPosition;
         yPosition = copy.yPosition;
-        tileSheet = copy.tileSheet;
+        tileSheet = copy.tileSheet.substring(0);
         index = copy.index;
     }
 

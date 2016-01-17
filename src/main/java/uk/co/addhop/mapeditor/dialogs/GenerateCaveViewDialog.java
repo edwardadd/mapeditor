@@ -29,7 +29,7 @@ public class GenerateCaveViewDialog extends JDialog implements MapViewInterface,
 
         makeViews();
 
-        map = MapFactory.generateCave();
+        map = MapFactory.generateCave(100, 100);
         mapView.update(null, map);
     }
 
@@ -42,7 +42,9 @@ public class GenerateCaveViewDialog extends JDialog implements MapViewInterface,
         mapView = new MapView();
         mapView.setDatabase(database);
         mapView.setController(this);
-        add(mapView, BorderLayout.CENTER);
+
+        final JScrollPane centerScroll = new JScrollPane(mapView, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        add(centerScroll, BorderLayout.CENTER);
 
         JButton okButton = new JButton("OK");
         okButton.setActionCommand("OK");
@@ -64,7 +66,7 @@ public class GenerateCaveViewDialog extends JDialog implements MapViewInterface,
     public void selectedTile(int x, int y) {
 
         // Generate Cave System
-        map = MapFactory.generateCave();
+        map = MapFactory.generateCave(100, 100);
         mapView.update(null, map);
     }
 
