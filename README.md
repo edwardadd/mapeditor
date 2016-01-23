@@ -32,6 +32,28 @@ When creating an OS X package, you will need to copy over the JavaStub file on y
 
 None
 
+### Road map ###
+
+* Creating new maps
+* Loading/Saving maps
+* Loading in basic tile image
+* Splitting tile image into a tile map
+
+- Tools
+* Setting map tile to selected tile map
+* Flood fill of an area of similar map tiles
+
+- Next
+* Finer controls of creating tile maps
+* Create a database of tile maps
+* Copy areas of the tile map
+* Paste as new map
+* Paste in map
+* Magic tiles made out of 9 different tiles
+* Layers
+* Object placement and serialisation
+* Structures - walls and ceilings
+
 ### Who do I talk to? ###
 
 Contact Ed - me@edwardaddley.co.uk
