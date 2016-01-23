@@ -38,6 +38,7 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
 
         final JMenu menu = new JMenu("File");
         menu.add(createMenuItem("New...", "NEW", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
+        menu.add(createMenuItem("New... Cave", "CAVE", KeyEvent.VK_E, KeyStroke.getKeyStroke(KeyEvent.VK_E, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
         menu.add(createMenuItem("Open...", "LOAD", KeyEvent.VK_O, KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
         menu.add(createMenuItem("Save", "SAVE", KeyEvent.VK_S, KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
         menu.add(createMenuItem("Save As...", "SAVE_AS", KeyEvent.VK_A, KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.SHIFT_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
@@ -73,6 +74,8 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
 
         if (e.getActionCommand().equals("NEW")) {
             controller.newMap();
+        } else if (e.getActionCommand().equals("CAVE")) {
+            controller.newCaveMap();
         } else if (e.getActionCommand().equals("LOAD")) {
             controller.loadMap();
         } else if (e.getActionCommand().equals("SAVE")) {

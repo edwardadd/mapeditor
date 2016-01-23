@@ -3,6 +3,7 @@ package uk.co.addhop.mapeditor.map;
 import uk.co.addhop.mapeditor.command.FillCommand;
 import uk.co.addhop.mapeditor.command.TileCommand;
 import uk.co.addhop.mapeditor.interfaces.Controller;
+import uk.co.addhop.mapeditor.interfaces.MapViewInterface;
 import uk.co.addhop.mapeditor.models.Brush;
 import uk.co.addhop.mapeditor.models.EventList;
 import uk.co.addhop.mapeditor.models.Map;
@@ -15,7 +16,7 @@ import uk.co.addhop.mapeditor.models.Tile;
  * @version (a version number or a date)
  */
 
-public class MapViewController implements Controller<Map> {
+public class MapViewController implements Controller<Map>, MapViewInterface {
 
     private Map model;
     private Brush brush;

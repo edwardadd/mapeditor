@@ -34,15 +34,20 @@ public class TileTypeDatabase extends Observable {
     public void createDefaultTileSheet() {
         final TileSheet tileSheet = new TileSheet("Default");
 
-        final BufferedImage image = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage image = new BufferedImage(100, 50, BufferedImage.TYPE_INT_ARGB);
         final Graphics graphic = image.getGraphics();
         graphic.setColor(Color.GREEN);
         graphic.fillRect(0, 0, 50, 50);
+        graphic.setColor(Color.RED);
+        graphic.fillRect(50, 0, 50, 50);
         graphic.setColor(Color.BLACK);
         graphic.drawRect(1, 1, 47, 47);
+        graphic.setColor(Color.BLACK);
+        graphic.drawRect(51, 1, 47, 47);
 
         tileSheet.setImage(image);
         tileSheet.addCell(0, 0, 50, 50);
+        tileSheet.addCell(50, 0, 50, 50);
 
         tileSheetList.put(tileSheet.getFilename(), tileSheet);
 

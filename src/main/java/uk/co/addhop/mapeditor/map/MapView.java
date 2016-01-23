@@ -1,6 +1,7 @@
 package uk.co.addhop.mapeditor.map;
 
 import uk.co.addhop.mapeditor.interfaces.Controller;
+import uk.co.addhop.mapeditor.interfaces.MapViewInterface;
 import uk.co.addhop.mapeditor.interfaces.View;
 import uk.co.addhop.mapeditor.models.Map;
 import uk.co.addhop.mapeditor.models.Tile;
@@ -20,8 +21,8 @@ import java.util.Observable;
  * @author (your name)
  * @version (a version number or a date)
  */
-public class MapView extends JPanel implements View<MapView, MapViewController> {
-    private MapViewController controller;
+public class MapView extends JPanel implements View<MapView, MapViewInterface> {
+    private MapViewInterface controller;
 
     private java.util.List<Tile> tileList;
 
@@ -34,37 +35,50 @@ public class MapView extends JPanel implements View<MapView, MapViewController> 
 
     public MapView() {
         tileList = new ArrayList<Tile>();
+        Tile tile = new Tile(0, 0);
+        tile.setTileSheet("Default");
+        tile.setTileSetIndex(0);
+        tileList.add(tile);
+        tileWidth = 50;
+        tileHeight = 50;
+        mapWidth = 1;
+        mapHeight = 1;
     }
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        if (database != null) {
 //        g.setColor(Color.RED);
 //        g.fillRect(getX(), getY(), getWidth(), getHeight());
 
-        final int startX = g.getClipBounds().x / tileWidth;
-        final int startY = g.getClipBounds().y / tileHeight;
-        final int endX = Math.min(1 + (g.getClipBounds().x + g.getClipBounds().width) / tileWidth, mapWidth);
-        final int endY = Math.min(1 + (g.getClipBounds().y + g.getClipBounds().height) / tileHeight, mapHeight);
+            final int startX = g.getClipBounds().x / tileWidth;
+            final int startY = g.getClipBounds().y / tileHeight;
+            final int endX = Math.min(1 + (g.getClipBounds().x + g.getClipBounds().width) / tileWidth, mapWidth);
+            final int endY = Math.min(1 + (g.getClipBounds().y + g.getClipBounds().height) / tileHeight, mapHeight);
 
-        for (int y = startY; y < endY; y++) {
-            for (int x = startX; x < endX; x++) {
-                final int index = x + y * mapWidth;
+            for (int y = startY; y < endY; y++) {
+                for (int x = startX; x < endX; x++) {
+                    final int index = x + y * mapWidth;
 
-                final Tile tile = tileList.get(index);
-                final TileSheet tileSheet = database.getTileSheet(tile.getTileSheet());
+                    final Tile tile = tileList.get(index);
+                    final TileSheet tileSheet = database.getTileSheet(tile.getTileSheet());
 
-                if (tileSheet != null) {
-                    final TileSheet.Cell cell = tileSheet.getCellList().get(tile.getTileSetIndex());
+                    if (tileSheet != null) {
+                        final TileSheet.Cell cell = tileSheet.getCellList().get(tile.getTileSetIndex());
 
-                    int dx = (int) cell.getFrame().getX();
-                    int dy = (int) cell.getFrame().getY();
-                    int dx2 = (int) (cell.getFrame().getX() + cell.getFrame().getWidth());
-                    int dy2 = (int) (cell.getFrame().getY() + cell.getFrame().getHeight());
+                        int dx = (int) cell.getFrame().getX();
+                        int dy = (int) cell.getFrame().getY();
+                        int dx2 = (int) (cell.getFrame().getX() + cell.getFrame().getWidth());
+                        int dy2 = (int) (cell.getFrame().getY() + cell.getFrame().getHeight());
 
-                    g.drawImage(tileSheet.getImage(), x * tileWidth, y * tileHeight, x * tileWidth + tileWidth, y * tileHeight + tileHeight, dx, dy, dx2, dy2, null);
+                        g.drawImage(tileSheet.getImage(), x * tileWidth, y * tileHeight, x * tileWidth + tileWidth, y * tileHeight + tileHeight, dx, dy, dx2, dy2, null);
+                    }
                 }
             }
+        } else {
+            g.setColor(Color.RED);
+            g.fillRect(getX(), getY(), getWidth(), getHeight());
         }
     }
 
@@ -129,7 +143,7 @@ public class MapView extends JPanel implements View<MapView, MapViewController> 
     }
 
     @Override
-    public void setController(MapViewController controller) {
+    public void setController(MapViewInterface controller) {
         this.controller = controller;
     }
 
