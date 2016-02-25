@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import uk.co.addhop.mapeditor.factorys.MapFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -231,7 +232,7 @@ public class Map extends Observable {
     }
 
     public static Map LoadMap(final String name) {
-        Map map = new Map();
+        Map map = MapFactory.generateMap();
 
         try {
             map.loadTileSet(name);

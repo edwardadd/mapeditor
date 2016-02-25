@@ -14,4 +14,8 @@ public class MapFactory {
         caveMap.initialize();
         return caveMap;
     }
+
+    public static Map generateMap() {
+        return new Map();
+    }
 }

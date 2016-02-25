@@ -8,5 +8,5 @@ import uk.co.addhop.mapeditor.models.Map;
  * Created by edwardaddley on 17/01/16.
  */
 public interface MapViewInterface extends Controller<Map> {
-    public void selectedTile(final int x, final int y);
+    void selectedTile(final int x, final int y);
 }

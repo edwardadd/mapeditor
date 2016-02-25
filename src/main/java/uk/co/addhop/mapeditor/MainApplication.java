@@ -191,15 +191,13 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
 
         appWindow.setSize(1024, 800);
         appWindow.setVisible(true);
-        appWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        appWindow.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         appWindow.addWindowListener(new WindowListener() {
-            @Override
             public void windowOpened(WindowEvent e) {
                 System.out.println("windowOpened - " + appWindow.getTitle());
             }
 
-            @Override
             public void windowClosing(WindowEvent e) {
                 System.out.println("windowClosing - " + appWindow.getTitle());
 
@@ -213,14 +211,14 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
                     panel.add(label, BorderLayout.CENTER);
 
                     final JPanel buttonPanel = new JPanel();
-                    final JButton okButton = (JButton) buttonPanel.add(new JButton("OK"));
+                    final JButton yesButton = (JButton) buttonPanel.add(new JButton("Yes"));
+//                    final JButton noButton = (JButton) buttonPanel.add(new JButton("No"));
                     final JButton cancelButton = (JButton) buttonPanel.add(new JButton("Cancel"));
                     panel.add(buttonPanel, BorderLayout.PAGE_END);
 
                     dialog.getContentPane().add(panel);
 
-                    okButton.addActionListener(new ActionListener() {
-                        @Override
+                    yesButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
 
                             final JFileChooser chooser = new JFileChooser();
@@ -239,7 +237,6 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
                     });
 
                     cancelButton.addActionListener(new ActionListener() {
-                        @Override
                         public void actionPerformed(ActionEvent e) {
                             dialog.dispose();
                         }
@@ -255,7 +252,6 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
 //                appWindow.dispose();
             }
 
-            @Override
             public void windowClosed(WindowEvent e) {
                 System.out.println("windowClosed - " + appWindow.getTitle());
 
@@ -266,24 +262,20 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
                 }
             }
 
-            @Override
             public void windowIconified(WindowEvent e) {
                 System.out.println("windowIconified - " + appWindow.getTitle());
             }
 
-            @Override
             public void windowDeiconified(WindowEvent e) {
                 System.out.println("windowDeiconified - " + appWindow.getTitle());
             }
 
-            @Override
             public void windowActivated(WindowEvent e) {
                 System.out.println("windowActivated - " + appWindow.getTitle());
 
                 focused = appWindow;
             }
 
-            @Override
             public void windowDeactivated(WindowEvent e) {
                 System.out.println("windowDeactivated - " + appWindow.getTitle());
             }
@@ -339,7 +331,6 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         for (final String recentMap : recentList) {
             final MenuItem item = recentMenu.add(new MenuItem(recentMap));
             item.addActionListener(new ActionListener() {
-                @Override
                 public void actionPerformed(ActionEvent e) {
                     final Map map = new Map(recentMap);
                     createMapWindow(map);
@@ -353,7 +344,6 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         for (final String recentMap : recentList) {
             final JMenuItem item = recentMainMenu.add(new JMenuItem(recentMap));
             item.addActionListener(new ActionListener() {
-                @Override
                 public void actionPerformed(ActionEvent e) {
                     final Map map = new Map(recentMap);
                     createMapWindow(map);
@@ -376,11 +366,6 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         return focused;
     }
 
-    public List<MapWindow> getMapWindowList() {
-        return mapWindowList;
-    }
-
-    @Override
     public void handleQuitRequestWith(AppEvent.QuitEvent quitEvent, QuitResponse quitResponse) {
         System.out.println("handleQuitRequestWith " + quitEvent.toString());
 
