@@ -1,8 +1,5 @@
 package uk.co.addhop.mapeditor;
 
-import com.apple.eawt.AppEvent;
-import com.apple.eawt.Application;
-import com.apple.eawt.QuitResponse;
 import uk.co.addhop.mapeditor.map.MapView;
 import uk.co.addhop.mapeditor.map.MapViewController;
 import uk.co.addhop.mapeditor.menubar.MainMenuBar;
@@ -27,15 +24,14 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-public class MainApplication implements com.apple.eawt.QuitHandler {
+public class MainApplication extends JFrame {
 
-    public static final int MAX_OPENED_WINDOWS = 10;
-    public static final String PREFS_LAST_OPENED_MAP = "LAST_OPENED_MAP_";
-    public static final String PREFS_RECENT_MAP = "RECENT_MAP_";
-    public static final int MAX_RECENTLIST_SIZE = 5;
+    private static final int MAX_OPENED_WINDOWS = 10;
+    private static final String PREFS_LAST_OPENED_MAP = "LAST_OPENED_MAP_";
+    private static final String PREFS_RECENT_MAP = "RECENT_MAP_";
+    private static final int MAX_RECENTLIST_SIZE = 5;
 
     private Preferences preferences;
     private TileTypeDatabase tileTypeDatabase;
@@ -52,13 +48,7 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         // set the look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (UnsupportedLookAndFeelException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -80,28 +70,23 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         mainMenuBar.setController(mainMenuBarController);
 
         final JMenuBar menuBar = mainMenuBar.getView();
-        final PopupMenu popupMenu = createPopupMenu();
+//        final PopupMenu popupMenu = createPopupMenu();
 
-        // Uses application to set the dock menu and main menu
-        // This is Apple specific
-        final Application application = Application.getApplication();
+        this.setJMenuBar(menuBar);
+//        this.setMinimumSize(new Dimension(300, 300));
 
-        if (application != null) {
-            System.out.println("Application exists");
-
-            application.setDefaultMenuBar(menuBar);
-            application.setDockMenu(popupMenu);
-            application.setQuitHandler(this);
+        this.pack();
+        this.setVisible(true);
+//        this.setExtendedState(this.MAXIMIZED_BOTH);
+//
 //            application.setQuitStrategy(QuitStrategy.SYSTEM_EXIT_0);
-            application.disableSuddenTermination();
 
-            updateRecentMenus();
+        //updateRecentMenus();
 
             tileTypeDatabase = new TileTypeDatabase();
             tileTypeDatabase.loadDatabase();
 
             loadPreviouslyOpenedMaps();
-        }
     }
 
     public void setSystemProperties() {
@@ -194,12 +179,10 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         appWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         appWindow.addWindowListener(new WindowListener() {
-            @Override
             public void windowOpened(WindowEvent e) {
                 System.out.println("windowOpened - " + appWindow.getTitle());
             }
 
-            @Override
             public void windowClosing(WindowEvent e) {
                 System.out.println("windowClosing - " + appWindow.getTitle());
 
@@ -255,7 +238,6 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
 //                appWindow.dispose();
             }
 
-            @Override
             public void windowClosed(WindowEvent e) {
                 System.out.println("windowClosed - " + appWindow.getTitle());
 
@@ -266,24 +248,20 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
                 }
             }
 
-            @Override
             public void windowIconified(WindowEvent e) {
                 System.out.println("windowIconified - " + appWindow.getTitle());
             }
 
-            @Override
             public void windowDeiconified(WindowEvent e) {
                 System.out.println("windowDeiconified - " + appWindow.getTitle());
             }
 
-            @Override
             public void windowActivated(WindowEvent e) {
                 System.out.println("windowActivated - " + appWindow.getTitle());
 
                 focused = appWindow;
             }
 
-            @Override
             public void windowDeactivated(WindowEvent e) {
                 System.out.println("windowDeactivated - " + appWindow.getTitle());
             }
@@ -380,40 +358,40 @@ public class MainApplication implements com.apple.eawt.QuitHandler {
         return mapWindowList;
     }
 
-    @Override
-    public void handleQuitRequestWith(AppEvent.QuitEvent quitEvent, QuitResponse quitResponse) {
-        System.out.println("handleQuitRequestWith " + quitEvent.toString());
-
-        // Save all to recent list
-        for (int i = 0; i < MAX_OPENED_WINDOWS; i++) {
-            preferences.put(PREFS_LAST_OPENED_MAP + i, "empty");
-        }
-
-        int i = 0;
-        for (MapWindow window : mapWindowList) {
-            final Map map = window.getMap();
-            if (map.getFileName() != null) {
-                preferences.put(PREFS_LAST_OPENED_MAP + i, map.getFileName());
-                i++;
-            }
-        }
-
-//        for (MapWindow window : mapWindowList) {
-//            window.dispose();
+//    @Override
+//    public void handleQuitRequestWith(AppEvent.QuitEvent quitEvent, QuitResponse quitResponse) {
+//        System.out.println("handleQuitRequestWith " + quitEvent.toString());
+//
+//        // Save all to recent list
+//        for (int i = 0; i < MAX_OPENED_WINDOWS; i++) {
+//            preferences.put(PREFS_LAST_OPENED_MAP + i, "empty");
 //        }
-
-        saveRecentListToPrefs();
-
-        try {
-            preferences.flush();
-        } catch (BackingStoreException e) {
-            e.printStackTrace();
-        }
-
-        quitResponse.performQuit();
-//        quitResponse.cancelQuit();
-//        System.exit(0);
-    }
+//
+//        int i = 0;
+//        for (MapWindow window : mapWindowList) {
+//            final Map map = window.getMap();
+//            if (map.getFileName() != null) {
+//                preferences.put(PREFS_LAST_OPENED_MAP + i, map.getFileName());
+//                i++;
+//            }
+//        }
+//
+////        for (MapWindow window : mapWindowList) {
+////            window.dispose();
+////        }
+//
+//        saveRecentListToPrefs();
+//
+//        try {
+//            preferences.flush();
+//        } catch (BackingStoreException e) {
+//            e.printStackTrace();
+//        }
+//
+//        quitResponse.performQuit();
+////        quitResponse.cancelQuit();
+////        System.exit(0);
+//    }
 
     public void addToRecentList(String fileName) {
         for (String other : recentList) {

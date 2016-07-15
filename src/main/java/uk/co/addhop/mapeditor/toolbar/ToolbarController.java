@@ -13,24 +13,23 @@ public class ToolbarController implements Controller<ToolbarModel> {
 
     private ToolbarModel toolbarModel;
 
-    public void undo() {
+    void undo() {
         EventList.getInstance().undo();
     }
 
-    public void redo() {
+    void redo() {
         EventList.getInstance().redo();
     }
 
-    public void paint() {
+    void paint() {
         toolbarModel.changeBrush(Brush.BrushType.PAINT);
     }
 
-    public void fill() {
+    void fill() {
         // Change brush type
         toolbarModel.changeBrush(Brush.BrushType.FILL);
     }
 
-    @Override
     public void setModel(ToolbarModel model) {
         this.toolbarModel = model;
     }

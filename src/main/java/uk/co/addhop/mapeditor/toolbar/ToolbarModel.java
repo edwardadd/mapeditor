@@ -16,7 +16,7 @@ public class ToolbarModel extends Observable {
         this.brush = brush;
     }
 
-    public void changeBrush(final Brush.BrushType brushType) {
+    void changeBrush(final Brush.BrushType brushType) {
         brush.setBrushType(brushType);
         brush.notifyObservers(brush);
 
