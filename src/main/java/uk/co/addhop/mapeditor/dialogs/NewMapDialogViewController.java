@@ -1,6 +1,7 @@
 package uk.co.addhop.mapeditor.dialogs;
 
 import uk.co.addhop.mapeditor.MainApplication;
+import uk.co.addhop.mapeditor.factorys.MapFactory;
 import uk.co.addhop.mapeditor.models.Map;
 
 import javax.swing.*;
@@ -185,7 +186,7 @@ public class NewMapDialogViewController extends javax.swing.JDialog implements A
         if (e.getSource() == okButton) {
             // TODO Validation on text fields
 
-            final Map map = new Map();
+            final Map map = MapFactory.generateMap();
             map.createMap(nameField.getText(),
                     Integer.parseInt(widthField.getText()), Integer.parseInt(heightField.getText()),
                     Integer.parseInt(tileWidthField.getText()), Integer.parseInt(tileHeightField.getText()));

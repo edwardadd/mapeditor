@@ -8,9 +8,9 @@ import java.util.Observer;
  */
 public interface View<V, C extends Controller<?>> extends Observer {
 
-    public V getView();
+    V getView();
 
-    public void setController(final C controller);
+    void setController(final C controller);
 
-    public Controller getController();
+    Controller getController();
 }
