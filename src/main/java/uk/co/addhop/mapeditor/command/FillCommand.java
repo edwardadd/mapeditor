@@ -9,7 +9,7 @@ import uk.co.addhop.mapeditor.models.Tile;
  * Created by edwardaddley on 19/01/15.
  */
 public class FillCommand implements Command {
-    public static final int MAX_STACK = 2048;
+    private static final int MAX_STACK = 2048;
     private Map model;
     private Tile tile;
     private String tileSheetName;
@@ -22,7 +22,6 @@ public class FillCommand implements Command {
         this.tileSheetCellIndex = tileSheetCellIndex;
     }
 
-    @Override
     public boolean execute() {
         fill(tile.getXPosition(), tile.getYPosition(), tile.getTileSheet(), tile.getTileSetIndex(), tileSheetName, tileSheetCellIndex, model.getMapWidth(), model.getMapHeight());
         return true;
@@ -134,26 +133,25 @@ public class FillCommand implements Command {
         }
     }
 
-    public static class Segment {
+    private static class Segment {
 
-        public Segment(int y, int xl, int xr, int dy) {
+        Segment(int y, int xl, int xr, int dy) {
             set(y, xl, xr, dy);
         }
 
-        public void set(int y, int xl, int xr, int dy) {
+        void set(int y, int xl, int xr, int dy) {
             this.y = y;
             this.xl = xl;
             this.xr = xr;
             this.dy = dy;
         }
 
-        public int y;
-        public int xl;
-        public int xr;
-        public int dy;
+        int y;
+        int xl;
+        int xr;
+        int dy;
     }
 
-    @Override
     public boolean undo() {
         return false;
     }
