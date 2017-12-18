@@ -24,7 +24,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-public class MainApplication extends JFrame {
+public class MainApplication extends JFrame implements WindowManagerInterface {
 
     private static final int MAX_OPENED_WINDOWS = 10;
     private static final String PREFS_LAST_OPENED_MAP = "LAST_OPENED_MAP_";
@@ -146,7 +146,7 @@ public class MainApplication extends JFrame {
         toolbarController.setModel(toolbarModel);
 
         // Create window
-        final MapWindow appWindow = new MapWindow(mapModel, brush);
+        final MapWindow appWindow = new MapWindow(mapModel, brush, this);
 
         // Set up menu bar
         final MainMenuBar menuBar = new MainMenuBar();

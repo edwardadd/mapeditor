@@ -7,26 +7,25 @@ import uk.co.addhop.mapeditor.palette.NewPaletteView;
 import uk.co.addhop.mapeditor.toolbar.ToolbarView;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 /**
- * Created by edwardaddley on 11/07/15.
+ * Created by Edward Addley on 11/07/15.
  */
 public class MapWindow extends JFrame {
     private Map map;
     private Brush brush;
-    private MainApplication windows;
+    private WindowManagerInterface windows;
 
-    public MapWindow(final Map map, final Brush brush) {
+    MapWindow(final Map map, final Brush brush, WindowManagerInterface windows) {
         super();
 
         setTitle(map.getMapName() + " - " + map.getFileName());
 
         this.map = map;
         this.brush = brush;
+        this.windows = windows;
     }
 
     public Map getMap() {
@@ -87,31 +86,20 @@ public class MapWindow extends JFrame {
 
                     dialog.getContentPane().add(panel);
 
-                    okButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
+                    okButton.addActionListener(event -> {
 
-                            final JFileChooser chooser = new JFileChooser();
-                            final int returnVal = chooser.showSaveDialog(null);
+                        final JFileChooser chooser = new JFileChooser();
+                        final int returnVal = chooser.showSaveDialog(null);
 
-                            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                                //System.out.println("You chose to open this file: " +
-                                final String filePath = chooser.getSelectedFile().getAbsolutePath();
-                                map.saveTileSet(filePath);
-
-                                // Add to most recent file list
-                            }
-
-                            dialog.dispose();
+                        if (returnVal == JFileChooser.APPROVE_OPTION) {
+                            final String filePath = chooser.getSelectedFile().getAbsolutePath();
+                            map.saveTileSet(filePath);
                         }
+
+                        dialog.dispose();
                     });
 
-                    cancelButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            dialog.dispose();
-                        }
-                    });
+                    cancelButton.addActionListener(event -> dialog.dispose());
 
                     dialog.pack();
                     dialog.setLocationRelativeTo(null);
