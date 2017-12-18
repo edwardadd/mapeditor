@@ -14,32 +14,19 @@ import uk.co.addhop.mapeditor.toolbar.ToolbarModel;
 import uk.co.addhop.mapeditor.toolbar.ToolbarView;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 public class MainApplication extends JFrame implements WindowManagerInterface {
 
-    private static final int MAX_OPENED_WINDOWS = 10;
-    private static final String PREFS_LAST_OPENED_MAP = "LAST_OPENED_MAP_";
-    private static final String PREFS_RECENT_MAP = "RECENT_MAP_";
-    private static final int MAX_RECENTLIST_SIZE = 5;
+    public static final int MAX_OPENED_WINDOWS = 10;
 
-    private Preferences preferences;
     private TileTypeDatabase tileTypeDatabase;
 
-    private MainMenuBar mainMenuBar;
     private java.util.List<MapWindow> mapWindowList = new ArrayList<MapWindow>();
     private MapWindow focused;
-    private PopupMenu recentMenu;
-
-    private Deque<String> recentList = new ArrayDeque<String>();
+    private RecentMapsManager recentMapsManager;
 
     public void init() {
 
@@ -57,34 +44,24 @@ public class MainApplication extends JFrame implements WindowManagerInterface {
             System.out.println("Document directory failed to create: " + getDocumentPath());
         }
 
-        preferences = Preferences.userNodeForPackage(this.getClass());
+        recentMapsManager = new RecentMapsManager();
 
-        updateRecentListFromPrefs();
 
-        final MainMenuBarController mainMenuBarController = new MainMenuBarController();
+        final MainMenuBarController mainMenuBarController = new MainMenuBarController(recentMapsManager);
         mainMenuBarController.setModel(this);
 
-        mainMenuBar = new MainMenuBar();
+        final MainMenuBar mainMenuBar = new MainMenuBar(this, recentMapsManager, true);
         mainMenuBar.setController(mainMenuBarController);
 
         final JMenuBar menuBar = mainMenuBar.getView();
-//        final PopupMenu popupMenu = createPopupMenu();
-
         this.setJMenuBar(menuBar);
-//        this.setMinimumSize(new Dimension(300, 300));
-
         this.pack();
         this.setVisible(true);
-//        this.setExtendedState(this.MAXIMIZED_BOTH);
-//
-//            application.setQuitStrategy(QuitStrategy.SYSTEM_EXIT_0);
 
-        //updateRecentMenus();
+        tileTypeDatabase = new TileTypeDatabase();
+        tileTypeDatabase.loadDatabase();
 
-            tileTypeDatabase = new TileTypeDatabase();
-            tileTypeDatabase.loadDatabase();
-
-            loadPreviouslyOpenedMaps();
+        loadPreviouslyOpenedMaps();
     }
 
     public void setSystemProperties() {
@@ -99,17 +76,18 @@ public class MainApplication extends JFrame implements WindowManagerInterface {
     }
 
     private void loadPreviouslyOpenedMaps() {
+        final List<String> recent = recentMapsManager.recentlyOpenedMapsList();
+
         // Load any previously open map windows
-        for (int i = 0; i < MAX_OPENED_WINDOWS; i++) {
-            final String recentMap = preferences.get(PREFS_LAST_OPENED_MAP + i, "empty");
-            if (!"empty".equals(recentMap)) {
-                final Map map = new Map(recentMap);
-                createMapWindow(map);
-            }
+        for (final String recentMap : recent) {
+            final Map map = new Map(recentMap);
+            final MapWindow window = createMapWindow(map);
+            mapWindowList.add(window);
         }
     }
 
-    public JFrame createMapWindow(final Map mapModel) {
+    @Override
+    public MapWindow createMapWindow(final Map mapModel) {
 
         final Brush brush = new Brush();
 
@@ -149,8 +127,8 @@ public class MainApplication extends JFrame implements WindowManagerInterface {
         final MapWindow appWindow = new MapWindow(mapModel, brush, this);
 
         // Set up menu bar
-        final MainMenuBar menuBar = new MainMenuBar();
-        final MainMenuBarController menuBarController = new MainMenuBarController();
+        final MainMenuBar menuBar = new MainMenuBar(this, recentMapsManager, false);
+        final MainMenuBarController menuBarController = new MainMenuBarController(recentMapsManager);
         menuBarController.setModel(MainApplication.this);
         menuBarController.setParent(appWindow);
         menuBar.setController(menuBarController);
@@ -174,77 +152,6 @@ public class MainApplication extends JFrame implements WindowManagerInterface {
         }
     }
 
-    private PopupMenu createPopupMenu() {
-        recentMenu = new PopupMenu("Recent maps");
-
-        updateRecentMenus();
-
-        // Dock popup menu requires AWT classes
-        final PopupMenu popupMenu = new PopupMenu("Map Editor");
-        popupMenu.add(recentMenu);
-        return popupMenu;
-    }
-
-    private void updateRecentListFromPrefs() {
-        for (int i = 0; i < MAX_RECENTLIST_SIZE; i++) {
-            final String recentMap = preferences.get(PREFS_RECENT_MAP + i, "empty");
-            if (!"empty".equals(recentMap)) {
-                recentList.push(recentMap);
-            }
-        }
-    }
-
-    private void saveRecentListToPrefs() {
-        for (int i = 0; i < MAX_RECENTLIST_SIZE; i++) {
-            preferences.put(PREFS_RECENT_MAP + i, "empty");
-        }
-
-        int i = 0;
-        for (String recentMap : recentList) {
-            preferences.put(PREFS_RECENT_MAP + i, recentMap);
-            i++;
-        }
-    }
-
-    private void updateRecentMenus() {
-        recentMenu.removeAll();
-
-        for (final String recentMap : recentList) {
-            final MenuItem item = recentMenu.add(new MenuItem(recentMap));
-            item.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    final Map map = new Map(recentMap);
-                    createMapWindow(map);
-                }
-            });
-        }
-
-        final JMenu recentMainMenu = MainMenuBar.getFileOpenRecentMenu();
-        recentMainMenu.removeAll();
-
-        for (final String recentMap : recentList) {
-            final JMenuItem item = recentMainMenu.add(new JMenuItem(recentMap));
-            item.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    final Map map = new Map(recentMap);
-                    createMapWindow(map);
-                }
-            });
-        }
-    }
-
-    public boolean isMapLoaded(final String filename) {
-        for (final MapWindow window : mapWindowList) {
-            if (window.getMap().getFileName().equals(filename)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public MapWindow getFocusedWindow() {
         return focused;
     }
@@ -263,53 +170,6 @@ public class MainApplication extends JFrame implements WindowManagerInterface {
 
     public void removeWindow(MapWindow window) {
         mapWindowList.remove(window);
-    }
-
-//    @Override
-//    public void handleQuitRequestWith(AppEvent.QuitEvent quitEvent, QuitResponse quitResponse) {
-//        System.out.println("handleQuitRequestWith " + quitEvent.toString());
-//
-//        // Save all to recent list
-//        for (int i = 0; i < MAX_OPENED_WINDOWS; i++) {
-//            preferences.put(PREFS_LAST_OPENED_MAP + i, "empty");
-//        }
-//
-//        int i = 0;
-//        for (MapWindow window : mapWindowList) {
-//            final Map map = window.getMap();
-//            if (map.getFileName() != null) {
-//                preferences.put(PREFS_LAST_OPENED_MAP + i, map.getFileName());
-//                i++;
-//            }
-//        }
-//
-////        for (MapWindow window : mapWindowList) {
-////            window.dispose();
-////        }
-//
-//        saveRecentListToPrefs();
-//
-//        try {
-//            preferences.flush();
-//        } catch (BackingStoreException e) {
-//            e.printStackTrace();
-//        }
-//
-//        quitResponse.performQuit();
-////        quitResponse.cancelQuit();
-////        System.exit(0);
-//    }
-
-    public void addToRecentList(String fileName) {
-        for (String other : recentList) {
-            if (other.equals(fileName)) {
-                recentList.remove(other);
-            }
-        }
-
-        recentList.push(fileName);
-
-        updateRecentMenus();
     }
 
     public TileTypeDatabase getDatabase() {

@@ -2,6 +2,7 @@ package uk.co.addhop.mapeditor.menubar;
 
 import uk.co.addhop.mapeditor.MainApplication;
 import uk.co.addhop.mapeditor.MapWindow;
+import uk.co.addhop.mapeditor.RecentMapsManager;
 import uk.co.addhop.mapeditor.dialogs.GenerateCaveViewDialog;
 import uk.co.addhop.mapeditor.dialogs.NewMapDialogViewController;
 import uk.co.addhop.mapeditor.dialogs.TileSheetViewDialog;
@@ -16,12 +17,17 @@ import javax.swing.*;
  * Created by edwardaddley on 17/01/15.
  */
 public class MainMenuBarController implements Controller<MainApplication> {
-    private MainApplication model;
+    private MainApplication application;
+    private RecentMapsManager recentMapsManager;
     private MapWindow parent;
+
+    public MainMenuBarController(final RecentMapsManager recentMapsManager) {
+        this.recentMapsManager = recentMapsManager;
+    }
 
     @Override
     public void setModel(final MainApplication model) {
-        this.model = model;
+        this.application = model;
     }
 
     public void setParent(final MapWindow mapWindow) {
@@ -31,12 +37,12 @@ public class MainMenuBarController implements Controller<MainApplication> {
     public void newMap() {
         // Start new dialog and create a new Window
 
-        final NewMapDialogViewController dialogViewController = new NewMapDialogViewController(null, model, true);
+        final NewMapDialogViewController dialogViewController = new NewMapDialogViewController(null, application, true);
         dialogViewController.setVisible(true);
     }
 
     public void newCaveMap() {
-        final GenerateCaveViewDialog dialog = new GenerateCaveViewDialog(null, "Cave", true, model.getDatabase());
+        final GenerateCaveViewDialog dialog = new GenerateCaveViewDialog(null, "Cave", true, application.getDatabase());
         dialog.setVisible(true);
     }
 
@@ -48,7 +54,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
         if (parent != null) {
             window = parent;
         } else {
-            window = model.getFocusedWindow();
+            window = application.getFocusedWindow();
         }
 
         if (window != null) {
@@ -56,7 +62,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
             if (map.getFileName() != null) {
                 map.saveTileSet(map.getFileName());
 
-                model.addToRecentList(map.getFileName());
+                recentMapsManager.addToRecentList(map.getFileName());
             } else {
                 saveMapAs();
             }
@@ -71,11 +77,10 @@ public class MainMenuBarController implements Controller<MainApplication> {
 
         int returnVal = chooser.showOpenDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            //System.out.println("You chose to open this file: " +
             final String filePath = chooser.getSelectedFile().getAbsolutePath();
 
-            model.addToRecentList(filePath);
-            model.createMapWindow(new Map(filePath));
+            recentMapsManager.addToRecentList(filePath);
+            application.createMapWindow(new Map(filePath));
         }
 
     }
@@ -89,7 +94,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
         if (parent != null) {
             window = parent;
         } else {
-            window = model.getFocusedWindow();
+            window = application.getFocusedWindow();
         }
 
         window.dispose();
@@ -101,7 +106,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
         if (parent != null) {
             window = parent;
         } else {
-            window = model.getFocusedWindow();
+            window = application.getFocusedWindow();
         }
 
         if (window != null) {
@@ -115,7 +120,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
                 window.getMap().saveTileSet(filePath);
 
                 // Add to most recent file list
-                model.addToRecentList(window.getMap().getFileName());
+                recentMapsManager.addToRecentList(window.getMap().getFileName());
             }
         }
     }
@@ -137,7 +142,7 @@ public class MainMenuBarController implements Controller<MainApplication> {
             final String filePath = chooser.getSelectedFile().getAbsolutePath();
 
             // Display modal dialog for cutting up the
-            final TileSheetViewDialog dialog = new TileSheetViewDialog(null, "Tile Sheet View Dialog", true, filePath, model.getDatabase());
+            final TileSheetViewDialog dialog = new TileSheetViewDialog(null, "Tile Sheet View Dialog", true, filePath, application.getDatabase());
             dialog.setVisible(true);
         }
     }

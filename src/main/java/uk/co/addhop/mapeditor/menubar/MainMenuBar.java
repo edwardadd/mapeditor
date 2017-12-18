@@ -1,7 +1,10 @@
 package uk.co.addhop.mapeditor.menubar;
 
-import uk.co.addhop.mapeditor.interfaces.Controller;
+import uk.co.addhop.mapeditor.MapWindow;
+import uk.co.addhop.mapeditor.RecentMapsManager;
+import uk.co.addhop.mapeditor.WindowManagerInterface;
 import uk.co.addhop.mapeditor.interfaces.View;
+import uk.co.addhop.mapeditor.models.Map;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,17 +21,22 @@ import java.util.Observable;
  */
 public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, ActionListener {
 
-    private boolean appMenuBar;
-    private JMenuBar menuBar;
-    private MainMenuBarController controller;
+    // The window and recent menus will be the same across all menus
     private static JMenu fileOpenRecentMenu;
     private static JMenu windowMenu;
 
-    public MainMenuBar() {
-        this(false);
-    }
+    // macOS we need to identify the current menu bar
+    private boolean appMenuBar;
 
-    public MainMenuBar(final boolean appMenuBar) {
+    private JMenuBar menuBar;
+    private MainMenuBarController controller;
+
+    private RecentMapsManager recentMapsManager;
+    private WindowManagerInterface windows;
+
+    public MainMenuBar(WindowManagerInterface windows, RecentMapsManager recentMapsManager, final boolean appMenuBar) {
+        this.windows = windows;
+        this.recentMapsManager = recentMapsManager;
         this.appMenuBar = appMenuBar;
 
         if (fileOpenRecentMenu == null) {
@@ -68,24 +76,58 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
         return item;
     }
 
+    private void updateRecentsMenu() {
+        final JMenu recentMainMenu = fileOpenRecentMenu;
+        recentMainMenu.removeAll();
+
+        for (final String recentMap : recentMapsManager.getRecentList()) {
+            final JMenuItem item = recentMainMenu.add(new JMenuItem(recentMap));
+            item.addActionListener(event -> {
+                final Map map = new Map(recentMap);
+                windows.createMapWindow(map);
+            });
+        }
+    }
+
+    private void updateWindowMenu() {
+        final JMenu menu = windowMenu;
+        menu.removeAll();
+
+        for (final MapWindow window : windows.getMapWindowList()) {
+            menu.add(new JMenuItem(window.getTitle()));
+            // TODO Switch to window
+        }
+    }
+
     @Override
     public void actionPerformed(final ActionEvent e) {
         System.out.println("actionPerformed - " + e.getActionCommand());
 
-        if (e.getActionCommand().equals("NEW")) {
-            controller.newMap();
-        } else if (e.getActionCommand().equals("CAVE")) {
-            controller.newCaveMap();
-        } else if (e.getActionCommand().equals("LOAD")) {
-            controller.loadMap();
-        } else if (e.getActionCommand().equals("SAVE")) {
-            controller.saveMap();
-        } else if (e.getActionCommand().equals("SAVE")) {
-            controller.saveMapAs();
-        } else if (e.getActionCommand().equals("CLOSE")) {
-            controller.closeMap();
-        } else if (e.getActionCommand().equals("ADD_TILE_SHEET")) {
-            controller.addTileSheet();
+        switch (e.getActionCommand()) {
+            case "NEW":
+                controller.newMap();
+                break;
+            case "CAVE":
+                controller.newCaveMap();
+                break;
+            case "LOAD":
+                controller.loadMap();
+                break;
+            case "SAVE":
+                controller.saveMap();
+                break;
+            case "SAVE_AS":
+                controller.saveMapAs();
+                break;
+            case "SAVE_ALL":
+                // TODO SAVE_ALL
+                break;
+            case "CLOSE":
+                controller.closeMap();
+                break;
+            case "ADD_TILE_SHEET":
+                controller.addTileSheet();
+                break;
         }
     }
 
@@ -100,17 +142,14 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
     }
 
     @Override
-    public Controller getController() {
+    public MainMenuBarController getController() {
         return controller;
     }
 
     @Override
     public void update(Observable o, Object arg) {
-
-    }
-
-    public static JMenu getFileOpenRecentMenu() {
-        return fileOpenRecentMenu;
+        updateRecentsMenu();
+        updateWindowMenu();
     }
 
     public static JMenu getWindowMenu() {
