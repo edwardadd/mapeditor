@@ -1,6 +1,5 @@
 package uk.co.addhop.mapeditor.toolbar;
 
-import uk.co.addhop.mapeditor.interfaces.Controller;
 import uk.co.addhop.mapeditor.interfaces.View;
 
 import javax.swing.*;
@@ -75,7 +74,7 @@ public class ToolbarView extends JToolBar implements View<JToolBar, ToolbarContr
         this.controller = controller;
     }
 
-    public Controller getController() {
+    public ToolbarController getController() {
         return controller;
     }
 }

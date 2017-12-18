@@ -17,8 +17,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -162,116 +160,13 @@ public class MainApplication extends JFrame {
 
         updateWindowMenus();
 
-        // Set up split
-        appWindow.getContentPane().setLayout(new BorderLayout());
-
-        final JScrollPane westScroll = new JScrollPane(paletteView, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        final JScrollPane centerScroll = new JScrollPane(mapView, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-
-        appWindow.getContentPane().add(toolbarView, BorderLayout.PAGE_START);
-        appWindow.getContentPane().add(westScroll, BorderLayout.WEST);
-        appWindow.getContentPane().add(centerScroll, BorderLayout.CENTER);
-        appWindow.getContentPane().add(new JPanel(), BorderLayout.SOUTH); // Space filler
-//        appWindow.pack();
-
-        appWindow.setSize(1024, 800);
-        appWindow.setVisible(true);
-        appWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-        appWindow.addWindowListener(new WindowListener() {
-            public void windowOpened(WindowEvent e) {
-                System.out.println("windowOpened - " + appWindow.getTitle());
-            }
-
-            public void windowClosing(WindowEvent e) {
-                System.out.println("windowClosing - " + appWindow.getTitle());
-
-                final String filename = mapModel.getFileName();
-                if (filename == null) {
-                    final JDialog dialog = new JDialog(appWindow, "Save before quitting?", true);
-
-                    final JPanel panel = new JPanel(new BorderLayout());
-                    final JLabel label = new JLabel("Do you wish to save " + mapModel.getMapName() + " map before quitting?");
-                    label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-                    panel.add(label, BorderLayout.CENTER);
-
-                    final JPanel buttonPanel = new JPanel();
-                    final JButton okButton = (JButton) buttonPanel.add(new JButton("OK"));
-                    final JButton cancelButton = (JButton) buttonPanel.add(new JButton("Cancel"));
-                    panel.add(buttonPanel, BorderLayout.PAGE_END);
-
-                    dialog.getContentPane().add(panel);
-
-                    okButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-
-                            final JFileChooser chooser = new JFileChooser();
-                            final int returnVal = chooser.showSaveDialog(null);
-
-                            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                                //System.out.println("You chose to open this file: " +
-                                final String filePath = chooser.getSelectedFile().getAbsolutePath();
-                                mapModel.saveTileSet(filePath);
-
-                                // Add to most recent file list
-                            }
-
-                            dialog.dispose();
-                        }
-                    });
-
-                    cancelButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            dialog.dispose();
-                        }
-                    });
-
-                    dialog.pack();
-                    dialog.setLocationRelativeTo(null);
-                    dialog.setVisible(true);
-                } else {
-                    mapModel.saveTileSet(mapModel.getFileName());
-                }
-
-//                appWindow.dispose();
-            }
-
-            public void windowClosed(WindowEvent e) {
-                System.out.println("windowClosed - " + appWindow.getTitle());
-
-                mapWindowList.remove(appWindow);
-
-                if (focused == appWindow) {
-                    focused = null;
-                }
-            }
-
-            public void windowIconified(WindowEvent e) {
-                System.out.println("windowIconified - " + appWindow.getTitle());
-            }
-
-            public void windowDeiconified(WindowEvent e) {
-                System.out.println("windowDeiconified - " + appWindow.getTitle());
-            }
-
-            public void windowActivated(WindowEvent e) {
-                System.out.println("windowActivated - " + appWindow.getTitle());
-
-                focused = appWindow;
-            }
-
-            public void windowDeactivated(WindowEvent e) {
-                System.out.println("windowDeactivated - " + appWindow.getTitle());
-            }
-        });
+        appWindow.setup(mapView, toolbarView, paletteView);
 
         return appWindow;
     }
 
     private void updateWindowMenus() {
-        final JMenu menu = mainMenuBar.getWindowMenu();
+        final JMenu menu = MainMenuBar.getWindowMenu();
         menu.removeAll();
 
         for (MapWindow window : mapWindowList) {
@@ -325,7 +220,7 @@ public class MainApplication extends JFrame {
             });
         }
 
-        final JMenu recentMainMenu = mainMenuBar.getFileOpenRecentMenu();
+        final JMenu recentMainMenu = MainMenuBar.getFileOpenRecentMenu();
         recentMainMenu.removeAll();
 
         for (final String recentMap : recentList) {
@@ -354,8 +249,20 @@ public class MainApplication extends JFrame {
         return focused;
     }
 
+    public void setFocusedWindow(MapWindow newFocus) {
+        focused = newFocus;
+    }
+
+    public void clearFocusedWindow() {
+        setFocusedWindow(null);
+    }
+
     public List<MapWindow> getMapWindowList() {
         return mapWindowList;
+    }
+
+    public void removeWindow(MapWindow window) {
+        mapWindowList.remove(window);
     }
 
 //    @Override

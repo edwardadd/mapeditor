@@ -1,6 +1,5 @@
 package uk.co.addhop.mapeditor.palette;
 
-import uk.co.addhop.mapeditor.interfaces.Controller;
 import uk.co.addhop.mapeditor.interfaces.View;
 import uk.co.addhop.mapeditor.models.TileTypeDatabase;
 
@@ -57,7 +56,7 @@ public class NewPaletteView extends JPanel implements View<NewPaletteView, Palet
     }
 
     @Override
-    public Controller getController() {
+    public PaletteViewController getController() {
         return controller;
     }
 

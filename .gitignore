@@ -41,3 +41,9 @@ target/
 .DS_Store
 
 build/
+bin/
+.gradle/
+.settings/
+
+.classpath
+.project
