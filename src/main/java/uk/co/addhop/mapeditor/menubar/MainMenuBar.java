@@ -76,7 +76,7 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
         return item;
     }
 
-    private void updateRecentsMenu() {
+    public void updateRecentsMenu() {
         final JMenu recentMainMenu = fileOpenRecentMenu;
         recentMainMenu.removeAll();
 
@@ -89,7 +89,7 @@ public class MainMenuBar implements View<JMenuBar, MainMenuBarController>, Actio
         }
     }
 
-    private void updateWindowMenu() {
+    public void updateWindowMenu() {
         final JMenu menu = windowMenu;
         menu.removeAll();
 

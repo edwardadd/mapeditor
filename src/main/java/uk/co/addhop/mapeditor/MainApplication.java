@@ -24,7 +24,7 @@ public class MainApplication extends JFrame implements WindowManagerInterface {
 
     private TileTypeDatabase tileTypeDatabase;
 
-    private java.util.List<MapWindow> mapWindowList = new ArrayList<MapWindow>();
+    private java.util.List<MapWindow> mapWindowList = new ArrayList<>();
     private MapWindow focused;
     private RecentMapsManager recentMapsManager;
 
@@ -62,6 +62,9 @@ public class MainApplication extends JFrame implements WindowManagerInterface {
         tileTypeDatabase.loadDatabase();
 
         loadPreviouslyOpenedMaps();
+
+
+        // TODO On quit remember all currently opened windows/maps
     }
 
     public void setSystemProperties() {
@@ -136,21 +139,13 @@ public class MainApplication extends JFrame implements WindowManagerInterface {
         appWindow.setJMenuBar(menuBar.getView());
         mapWindowList.add(appWindow);
 
-        updateWindowMenus();
-
         appWindow.setup(mapView, toolbarView, paletteView);
+
+        menuBar.updateWindowMenu();
 
         return appWindow;
     }
 
-    private void updateWindowMenus() {
-        final JMenu menu = MainMenuBar.getWindowMenu();
-        menu.removeAll();
-
-        for (MapWindow window : mapWindowList) {
-            menu.add(new JMenuItem(window.getTitle()));
-        }
-    }
 
     public MapWindow getFocusedWindow() {
         return focused;
